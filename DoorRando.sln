@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30104.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoorRando", "DoorRando\DoorRando.csproj", "{B87E4030-4073-40B7-A0AE-07FF31F57EEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B87E4030-4073-40B7-A0AE-07FF31F57EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B87E4030-4073-40B7-A0AE-07FF31F57EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B87E4030-4073-40B7-A0AE-07FF31F57EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B87E4030-4073-40B7-A0AE-07FF31F57EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {091C80CE-AD6A-4609-9305-2BC006AFBE5B}
+	EndGlobalSection
+EndGlobal
