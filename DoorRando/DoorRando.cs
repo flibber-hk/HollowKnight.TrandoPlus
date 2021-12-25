@@ -40,25 +40,30 @@ namespace DoorRando
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged += MenuHolder.OnExitMenu;
             RandomizerMod.Menu.RandomizerMenuAPI.AddMenuPage(MenuHolder.ConstructMenu, MenuHolder.TryGetMenuButton);
 
-            RandomizerMod.RC.RequestBuilder.OnUpdate.Subscribe(-750f, SetDoorRando);
+            RandomizerMod.RC.RequestBuilder.OnUpdate.Subscribe(-50_000f, ResetTransitions);
+            RandomizerMod.RC.RequestBuilder.OnUpdate.Subscribe(-750f, SetDoorRandoForItemRando);
+            RandomizerMod.RC.RequestBuilder.OnUpdate.Subscribe(-750f, SetDoorRandoForAreaRando);
         }
 
-        private void SetDoorRando(RequestBuilder rb)
+        private void ResetTransitions(RequestBuilder rb)
         {
             Transitions.Clear();
+        }
+
+        private void SetDoorRandoForAreaRando(RequestBuilder rb)
+        {
             if (!GS.RandomizeDoors) return;
 
             TransitionSettings ts = rb.gs.TransitionSettings;
-
-            if (ts.Mode != TransitionSettings.TransitionMode.None)
+            if (ts.Mode != TransitionSettings.TransitionMode.AreaRandomizer)
             {
-                LogError("Cannot door rando if base transition rando has been selected!");
                 return;
-            }    
+            }
 
             foreach (var pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
             {
-                if (pair.Item.Contains("[door") || pair.Location.Contains("[door"))
+                if ((Data.IsTransition(pair.Item) && Data.GetTransitionDef(pair.Item).Direction == TransitionDirection.Door)
+                    || (Data.IsTransition(pair.Location) && Data.GetTransitionDef(pair.Location).Direction == TransitionDirection.Door))
                 {
                     Transitions.Add(pair.Item);
                     Transitions.Add(pair.Location);
@@ -66,53 +71,125 @@ namespace DoorRando
                 }
             }
 
-            // For easiness (pairing door with door is deadly, because most non-doors are isolated) we ignore matched setting
-            // Insert stage at the start because it's effectively a collection of vanilla placements
-            StageBuilder sb = rb.InsertStage(0, "Door Rando Transition Stage");
+            StageBuilder sb = rb.Stages.First(x => x.label == RBConsts.MainTransitionStage);
 
-            List<string> nonDoors = Transitions.Where(x => !x.Contains("[door")).ToList();
-            List<string> doors = Transitions.Where(x => x.Contains("[door")).ToList();
+            GroupBuilder builder = null;
 
-            string startNonDoor = null;
-            string start = rb.gs.StartLocationSettings.StartLocation;
-            string startTrans = Data.GetStartDef(start).Transition;
-            if (nonDoors.Contains(startTrans))
+            if (ts.TransitionMatching == TransitionSettings.TransitionMatchingSetting.NonmatchingDirections)
             {
-                startNonDoor = Data.GetTransitionDef(startTrans).VanillaTarget;
+                builder = sb.Get(RBConsts.TwoWayGroup);
+
+                ((SelfDualTransitionGroupBuilder)builder).Transitions.AddRange(Transitions);
+            }
+            else
+            {
+                builder = sb.Get(RBConsts.InLeftOutRightGroup);
+
+                List<string> lefts = Transitions.Where(x => Data.GetTransitionDef(x).Direction == TransitionDirection.Left).ToList();
+                List<string> rights = Transitions.Where(x => Data.GetTransitionDef(x).Direction == TransitionDirection.Right).ToList();
+                List<string> doors = Transitions.Where(x => Data.GetTransitionDef(x).Direction == TransitionDirection.Door).ToList();
+                rb.rng.PermuteInPlace(doors);
+
+                foreach (string doorTrans in doors)
+                {
+                    if (lefts.Count > rights.Count)
+                    {
+                        rights.Add(doorTrans);
+                    }
+                    else
+                    {
+                        lefts.Add(doorTrans);
+                    }
+                }
+
+                ((SymmetricTransitionGroupBuilder)builder).Group1.AddRange(rights);
+                ((SymmetricTransitionGroupBuilder)builder).Group2.AddRange(lefts);
             }
 
-            List<(string door, string nonDoor)> pairs = ManualRandomizer.GetPairs(doors, nonDoors, startNonDoor, rb.rng);
-
-            for (int i = 0; i < pairs.Count; i++)
+            bool MatchedTryResolveGroup(RequestBuilder rb, string item, ElementType type, out GroupBuilder gb)
             {
-                SymmetricTransitionGroupBuilder builder = new()
+                if ((type == ElementType.Transition || Data.IsTransition(item))
+                    && (Transitions.Contains(item)))
                 {
-                    label = $"Forward {i}",
-                    reverseLabel = $"Reverse {i}",
-                    coupled = true,
+                    gb = builder;
+                    return true;
+                }
+                gb = default;
+                return false;
+            }
+            OnGetGroupFor.Subscribe(-1000f, MatchedTryResolveGroup);
+        }
+
+        private void SetDoorRandoForItemRando(RequestBuilder rb)
+        {
+            if (!GS.RandomizeDoors) return;
+
+            TransitionSettings ts = rb.gs.TransitionSettings;
+            if (ts.Mode != TransitionSettings.TransitionMode.None)
+            {
+                return;
+            }
+
+            foreach (var pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
+            {
+                if ((Data.IsTransition(pair.Item) && Data.GetTransitionDef(pair.Item).Direction == TransitionDirection.Door)
+                    || (Data.IsTransition(pair.Location) && Data.GetTransitionDef(pair.Location).Direction == TransitionDirection.Door))
+                {
+                    Transitions.Add(pair.Item);
+                    Transitions.Add(pair.Location);
+                    rb.Vanilla.RemoveAll(pair);
+                }
+            }
+
+            // Insert stage at the start because it's a lot more restricted than the item placements
+            // Treat matched as Door <--> Non-Door because that's what matched means in this context
+            StageBuilder sb = rb.InsertStage(0, "Door Rando Transition Stage");
+
+            GroupBuilder builder = null;
+
+            if (ts.TransitionMatching == TransitionSettings.TransitionMatchingSetting.NonmatchingDirections)
+            {
+                builder = new SelfDualTransitionGroupBuilder()
+                {
+                    label = $"Door Rando Group",
+                    stageLabel = RBConsts.MainTransitionStage,
+                    coupled = ts.Coupled,
+                };
+
+                ((SelfDualTransitionGroupBuilder)builder).Transitions.AddRange(Transitions);
+            }
+            else
+            {
+                builder = new SymmetricTransitionGroupBuilder()
+                {
+                    label = $"Forward Door Rando",
+                    reverseLabel = $"Reverse Door Rando",
+                    coupled = ts.Coupled,
                     stageLabel = "Door Rando Transition Stage"
                 };
 
-                builder.Group2.Add(pairs[i].door);
-                builder.Group1.Add(pairs[i].nonDoor);
+                List<string> nonDoors = Transitions.Where(x => Data.GetTransitionDef(x).Direction != TransitionDirection.Door).ToList();
+                List<string> doors = Transitions.Where(x => Data.GetTransitionDef(x).Direction == TransitionDirection.Door).ToList();
 
-                builder.strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy();
-
-                sb.Add(builder);
-
-                bool MatchedTryResolveGroup(RequestBuilder rb, string item, ElementType type, out GroupBuilder gb)
-                {
-                    if ((type == ElementType.Transition || Data.IsTransition(item))
-                        && (item == pairs[i].door || item == pairs[i].nonDoor))
-                    {
-                        gb = builder;
-                        return true;
-                    }
-                    gb = default;
-                    return false;
-                }
-                OnGetGroupFor.Subscribe(-1000f, MatchedTryResolveGroup);
+                ((SymmetricTransitionGroupBuilder)builder).Group1.AddRange(doors);
+                ((SymmetricTransitionGroupBuilder)builder).Group2.AddRange(nonDoors);
             }
+
+            builder.strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy();
+            sb.Add(builder);
+
+            bool MatchedTryResolveGroup(RequestBuilder rb, string item, ElementType type, out GroupBuilder gb)
+            {
+                if ((type == ElementType.Transition || Data.IsTransition(item))
+                    && (Transitions.Contains(item)))
+                {
+                    gb = builder;
+                    return true;
+                }
+                gb = default;
+                return false;
+            }
+            OnGetGroupFor.Subscribe(-1000f, MatchedTryResolveGroup);
         }
     }
 }
