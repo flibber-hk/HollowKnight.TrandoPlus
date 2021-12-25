@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Modding;
-using RandomizerCore;
 using RandomizerCore.Extensions;
-using RandomizerCore.Randomization;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
 using RandomizerMod.Settings;
-using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 using static RandomizerMod.RC.RequestBuilder;
 
 namespace DoorRando
@@ -40,25 +36,16 @@ namespace DoorRando
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged += MenuHolder.OnExitMenu;
             RandomizerMod.Menu.RandomizerMenuAPI.AddMenuPage(MenuHolder.ConstructMenu, MenuHolder.TryGetMenuButton);
 
-            RandomizerMod.RC.RequestBuilder.OnUpdate.Subscribe(-50_000f, ResetTransitions);
+            RandomizerMod.RC.RequestBuilder.OnUpdate.Subscribe(-750f, CaptureRandomizedDoorTransitions);
             RandomizerMod.RC.RequestBuilder.OnUpdate.Subscribe(-750f, SetDoorRandoForItemRando);
             RandomizerMod.RC.RequestBuilder.OnUpdate.Subscribe(-750f, SetDoorRandoForAreaRando);
         }
 
-        private void ResetTransitions(RequestBuilder rb)
+        private void CaptureRandomizedDoorTransitions(RequestBuilder rb)
         {
             Transitions.Clear();
-        }
 
-        private void SetDoorRandoForAreaRando(RequestBuilder rb)
-        {
             if (!GS.RandomizeDoors) return;
-
-            TransitionSettings ts = rb.gs.TransitionSettings;
-            if (ts.Mode != TransitionSettings.TransitionMode.AreaRandomizer)
-            {
-                return;
-            }
 
             foreach (var pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
             {
@@ -69,6 +56,17 @@ namespace DoorRando
                     Transitions.Add(pair.Location);
                     rb.Vanilla.RemoveAll(pair);
                 }
+            }
+        }
+
+        private void SetDoorRandoForAreaRando(RequestBuilder rb)
+        {
+            if (!GS.RandomizeDoors) return;
+
+            TransitionSettings ts = rb.gs.TransitionSettings;
+            if (ts.Mode != TransitionSettings.TransitionMode.AreaRandomizer)
+            {
+                return;
             }
 
             StageBuilder sb = rb.Stages.First(x => x.label == RBConsts.MainTransitionStage);
@@ -128,17 +126,6 @@ namespace DoorRando
             if (ts.Mode != TransitionSettings.TransitionMode.None)
             {
                 return;
-            }
-
-            foreach (var pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
-            {
-                if ((Data.IsTransition(pair.Item) && Data.GetTransitionDef(pair.Item).Direction == TransitionDirection.Door)
-                    || (Data.IsTransition(pair.Location) && Data.GetTransitionDef(pair.Location).Direction == TransitionDirection.Door))
-                {
-                    Transitions.Add(pair.Item);
-                    Transitions.Add(pair.Location);
-                    rb.Vanilla.RemoveAll(pair);
-                }
             }
 
             // Insert stage at the start because it's a lot more restricted than the item placements

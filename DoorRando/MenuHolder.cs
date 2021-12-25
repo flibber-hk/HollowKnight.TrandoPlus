@@ -1,7 +1,7 @@
 ﻿using MenuChanger;
+using MenuChanger.Extensions;
 using MenuChanger.MenuElements;
 using MenuChanger.MenuPanels;
-using MenuChanger.Extensions;
 using UnityEngine.SceneManagement;
 
 namespace DoorRando
