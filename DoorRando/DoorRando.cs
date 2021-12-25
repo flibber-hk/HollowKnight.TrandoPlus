@@ -67,7 +67,8 @@ namespace DoorRando
             }
 
             // For easiness (pairing door with door is deadly, because most non-doors are isolated) we ignore matched setting
-            StageBuilder sb = rb.AddStage("Door Rando Transition Stage");
+            // Insert stage at the start because it's effectively a collection of vanilla placements
+            StageBuilder sb = rb.InsertStage(0, "Door Rando Transition Stage");
 
             List<string> nonDoors = Transitions.Where(x => !x.Contains("[door")).ToList();
             List<string> doors = Transitions.Where(x => x.Contains("[door")).ToList();
@@ -112,12 +113,6 @@ namespace DoorRando
                 }
                 OnGetGroupFor.Subscribe(-1000f, MatchedTryResolveGroup);
             }
-
-            // Cursed
-            List<StageBuilder> _stages = ReflectionHelper.GetField<RequestBuilder, List<StageBuilder>>(rb, "_stages");
-            StageBuilder mig = _stages[0];
-            _stages.RemoveAt(0);
-            _stages.Add(mig);
         }
     }
 }
