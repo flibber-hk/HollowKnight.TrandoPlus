@@ -109,7 +109,7 @@ namespace DoorRando
 
             // Insert stage at the start because it's a lot more restricted than the item placements
             // Treat matched as Door <--> Non-Door because that's what matched means in this context
-            StageBuilder sb = rb.InsertStage(0, "Door Rando Transition Stage");
+            StageBuilder sb = rb.InsertStage(0, Consts.DoorRandoTransitionStage);
 
             GroupBuilder builder = null;
 
@@ -117,8 +117,8 @@ namespace DoorRando
             {
                 builder = new SelfDualTransitionGroupBuilder()
                 {
-                    label = $"Door Rando Group",
-                    stageLabel = RBConsts.MainTransitionStage,
+                    label = Consts.DoorRandoGroup,
+                    stageLabel = Consts.DoorRandoTransitionStage,
                     coupled = ts.Coupled,
                 };
 
@@ -128,10 +128,10 @@ namespace DoorRando
             {
                 builder = new SymmetricTransitionGroupBuilder()
                 {
-                    label = $"Forward Door Rando",
-                    reverseLabel = $"Reverse Door Rando",
+                    label = Consts.ForwardDoorRando,
+                    reverseLabel = Consts.ReverseDoorRando,
                     coupled = ts.Coupled,
-                    stageLabel = "Door Rando Transition Stage"
+                    stageLabel = Consts.DropRandoTransitionStage
                 };
 
                 List<string> nonDoors = DoorRandoTransitions.Where(x => Data.GetTransitionDef(x).Direction != TransitionDirection.Door).ToList();

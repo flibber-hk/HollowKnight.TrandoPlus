@@ -27,6 +27,7 @@ namespace DoorRando
 
             if (rando) MenuHolder.Hook();
             if (rando) DoorRandoAdder.Hook();
+            if (rando) DropRandoAdder.Hook();
         }
     }
 }
