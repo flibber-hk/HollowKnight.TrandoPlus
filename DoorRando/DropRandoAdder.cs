@@ -21,7 +21,7 @@ namespace DoorRando
 
             if (!DoorRando.GS.RandomizeDrops) return;
 
-            foreach (var pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
+            foreach (VanillaRequest pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
             {
                 if (Data.IsTransition(pair.Item) && Data.GetTransitionDef(pair.Item).Sides == TransitionSides.OneWayOut)
                 {
@@ -47,19 +47,12 @@ namespace DoorRando
             {
                 gb = (TransitionGroupBuilder)sb.Get(RBConsts.OneWayGroup);
             }
-            else if (rb.TryGetStage(Consts.DoorRandoTransitionStage, out sb))
-            {
-                gb = new TransitionGroupBuilder()
-                {
-                    label = Consts.DropRandoGroup,
-                    stageLabel = Consts.DoorRandoTransitionStage
-                };
-                sb.Add(gb);
-                gb.strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy();
-            }
             else
             {
-                sb = rb.InsertStage(0, Consts.DropRandoTransitionStage);
+                if (!rb.TryGetStage(Consts.DoorRandoTransitionStage, out sb))
+                {
+                    sb = rb.InsertStage(0, Consts.DoorRandoTransitionStage);
+                }
                 gb = new TransitionGroupBuilder()
                 {
                     label = Consts.DropRandoGroup,
