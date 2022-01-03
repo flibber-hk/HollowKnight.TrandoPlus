@@ -28,6 +28,7 @@ namespace TrandoPlus
             if (rando) MenuHolder.Hook();
             if (rando) DoorRandoAdder.Hook();
             if (rando) DropRandoAdder.Hook();
+            if (rando) ConditionManager.Hook();
         }
     }
 }
