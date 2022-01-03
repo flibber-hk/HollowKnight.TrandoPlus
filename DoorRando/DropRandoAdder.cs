@@ -41,11 +41,11 @@ namespace DoorRando
                 return;
             }
 
-            TransitionGroupBuilder gb;
+            TransitionGroupBuilder tgb;
 
             if (rb.TryGetStage(RBConsts.MainTransitionStage, out StageBuilder sb))
             {
-                gb = (TransitionGroupBuilder)sb.Get(RBConsts.OneWayGroup);
+                tgb = (TransitionGroupBuilder)sb.Get(RBConsts.OneWayGroup);
             }
             else
             {
@@ -53,26 +53,43 @@ namespace DoorRando
                 {
                     sb = rb.InsertStage(0, Consts.DoorRandoTransitionStage);
                 }
-                gb = new TransitionGroupBuilder()
+                tgb = new TransitionGroupBuilder()
                 {
                     label = Consts.DropRandoGroup,
                     stageLabel = Consts.DoorRandoTransitionStage
                 };
-                sb.Add(gb);
-                gb.strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy();
+                sb.Add(tgb);
+                tgb.strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy();
             }
 
             foreach (string trans in DropRandoTransitions)
             {
                 if (Data.GetTransitionDef(trans).Sides == TransitionSides.OneWayIn)
                 {
-                    gb.Sources.Add(trans);
+                    tgb.Sources.Add(trans);
                 }
                 else
                 {
-                    gb.Targets.Add(trans);
+                    tgb.Targets.Add(trans);
                 }
             }
+
+            rb.OnGetGroupFor.Subscribe(-999f, MatchedTryResolveGroup);
+
+            bool MatchedTryResolveGroup(RequestBuilder rb, string item, RequestBuilder.ElementType type, out GroupBuilder gb)
+            {
+                if (type == RequestBuilder.ElementType.Transition)
+                {
+                    if (DropRandoTransitions.Contains(item))
+                    {
+                        gb = tgb;
+                        return true;
+                    }
+                }
+                gb = default;
+                return false;
+            }
+
         }
     }
 }

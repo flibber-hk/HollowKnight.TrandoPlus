@@ -43,7 +43,8 @@ namespace DoorRando
             if (!DoorRando.GS.RandomizeDoors) return;
 
             TransitionSettings ts = rb.gs.TransitionSettings;
-            if (ts.Mode != TransitionSettings.TransitionMode.AreaRandomizer)
+            if (ts.Mode == TransitionSettings.TransitionMode.RoomRandomizer
+                || ts.Mode == TransitionSettings.TransitionMode.None)
             {
                 return;
             }
@@ -99,7 +100,7 @@ namespace DoorRando
                 gb = default;
                 return false;
             }
-            RequestBuilder.OnGetGroupFor.Subscribe(-1000f, MatchedTryResolveGroup);
+            rb.OnGetGroupFor.Subscribe(-1000f, MatchedTryResolveGroup);
         }
 
         private static void SetDoorRandoForItemRando(RequestBuilder rb)
@@ -165,7 +166,7 @@ namespace DoorRando
                 gb = default;
                 return false;
             }
-            RequestBuilder.OnGetGroupFor.Subscribe(-1000f, MatchedTryResolveGroup);
+            rb.OnGetGroupFor.Subscribe(-1000f, MatchedTryResolveGroup);
         }
 
         // If we start inside a mound, forbid these targets in item rando
