@@ -3,7 +3,7 @@ using RandomizerMod.RC;
 using RandomizerMod.Settings;
 using System.Collections.Generic;
 
-namespace DoorRando
+namespace TrandoPlus
 {
     public static class DropRandoAdder
     {
@@ -19,7 +19,7 @@ namespace DoorRando
         {
             DropRandoTransitions.Clear();
 
-            if (!DoorRando.GS.RandomizeDrops) return;
+            if (!TrandoPlus.GS.RandomizeDrops) return;
 
             foreach (VanillaRequest pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
             {
@@ -34,7 +34,7 @@ namespace DoorRando
 
         private static void AddDropsToRandoPool(RequestBuilder rb)
         {
-            if (!DoorRando.GS.RandomizeDrops) return;
+            if (!TrandoPlus.GS.RandomizeDrops) return;
 
             if (rb.gs.TransitionSettings.Mode == TransitionSettings.TransitionMode.RoomRandomizer)
             {

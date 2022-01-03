@@ -5,7 +5,7 @@ using MenuChanger.Extensions;
 using RandomizerMod.Menu;
 using UnityEngine.SceneManagement;
 
-namespace DoorRando
+namespace TrandoPlus
 {
     public class MenuHolder
     {
@@ -40,7 +40,7 @@ namespace DoorRando
         private void ConstructMenu(MenuPage landingPage)
         {
             MainPage = new MenuPage("Door Rando", landingPage);
-            doorMEF = new(MainPage, DoorRando.GS);
+            doorMEF = new(MainPage, TrandoPlus.GS);
             doorVIP = new(MainPage, new(0, 300), 50f, false, doorMEF.Elements);
         }
     }

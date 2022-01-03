@@ -1,16 +1,16 @@
 using Modding;
 
-namespace DoorRando
+namespace TrandoPlus
 {
-    public class DoorRando : Mod, IGlobalSettings<GlobalSettings>
+    public class TrandoPlus : Mod, IGlobalSettings<GlobalSettings>
     {
-        internal static DoorRando instance;
+        internal static TrandoPlus instance;
 
         public static GlobalSettings GS = new();
         public void OnLoadGlobal(GlobalSettings s) => GS = s;
         public GlobalSettings OnSaveGlobal() => GS;
 
-        public DoorRando() : base(null)
+        public TrandoPlus() : base(null)
         {
             instance = this;
         }

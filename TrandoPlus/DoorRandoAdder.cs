@@ -7,7 +7,7 @@ using RandomizerMod.Settings;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DoorRando
+namespace TrandoPlus
 {
     public static class DoorRandoAdder
     {
@@ -24,7 +24,7 @@ namespace DoorRando
         {
             DoorRandoTransitions.Clear();
 
-            if (!DoorRando.GS.RandomizeDoors) return;
+            if (!TrandoPlus.GS.RandomizeDoors) return;
 
             foreach (VanillaRequest pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
             {
@@ -40,7 +40,7 @@ namespace DoorRando
 
         private static void SetDoorRandoForAreaRando(RequestBuilder rb)
         {
-            if (!DoorRando.GS.RandomizeDoors) return;
+            if (!TrandoPlus.GS.RandomizeDoors) return;
 
             TransitionSettings ts = rb.gs.TransitionSettings;
             if (ts.Mode == TransitionSettings.TransitionMode.RoomRandomizer
@@ -105,7 +105,7 @@ namespace DoorRando
 
         private static void SetDoorRandoForItemRando(RequestBuilder rb)
         {
-            if (!DoorRando.GS.RandomizeDoors) return;
+            if (!TrandoPlus.GS.RandomizeDoors) return;
 
             TransitionSettings ts = rb.gs.TransitionSettings;
             if (ts.Mode != TransitionSettings.TransitionMode.None)

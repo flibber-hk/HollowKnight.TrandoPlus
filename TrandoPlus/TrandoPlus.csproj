@@ -2,8 +2,8 @@
   <PropertyGroup>
     <ProjectGuid>{B87E4030-4073-40B7-A0AE-07FF31F57EEC}</ProjectGuid>
     <TargetFramework>net472</TargetFramework>
-    <RootNamespace>DoorRando</RootNamespace>
-    <AssemblyTitle>DoorRando</AssemblyTitle>
+    <RootNamespace>TrandoPlus</RootNamespace>
+    <AssemblyTitle>TrandoPlus</AssemblyTitle>
     <AssemblyVersion>0.1.0</AssemblyVersion>
     <Deterministic>true</Deterministic>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

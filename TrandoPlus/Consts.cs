@@ -1,4 +1,4 @@
-﻿namespace DoorRando
+﻿namespace TrandoPlus
 {
     public static class Consts
     {
