@@ -35,7 +35,7 @@ namespace TrandoPlus
             SceneNames.Ruins_Bathhouse,
             SceneNames.Waterways_02,
             // SceneNames.GG_Atrium,
-            // SceneNames.GG_Atrium_Roof, // Doesn't even exist
+            // SceneNames.GG_Atrium_Roof,
             // SceneNames.GG_Workshop,
             SceneNames.Deepnest_30,
             SceneNames.Deepnest_14,
@@ -56,8 +56,14 @@ namespace TrandoPlus
             SceneNames.White_Palace_01,
             SceneNames.White_Palace_03_hub,
             SceneNames.White_Palace_06,
+
             // SceneNames.Room_Tram_RG,
+            SceneNames.Crossroads_46,
+            SceneNames.Crossroads_46b,
             // SceneNames.Room_Tram,
+            SceneNames.Abyss_03,
+            SceneNames.Abyss_03_b,
+            SceneNames.Abyss_03_c,
         };
 
         public static bool IsBenchScene(string sceneName) => benchScenes.Contains(sceneName);
