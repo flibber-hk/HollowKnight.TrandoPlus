@@ -31,7 +31,7 @@ namespace TrandoPlus
 
         private bool HandleButton(MenuPage landingPage, out SmallButton button)
         {
-            JumpToDRPage = new(landingPage, "Door Rando");
+            JumpToDRPage = new(landingPage, "TrandoPlus");
             JumpToDRPage.AddHideAndShowEvent(landingPage, MainPage);
             button = JumpToDRPage;
             return true;
@@ -39,7 +39,7 @@ namespace TrandoPlus
 
         private void ConstructMenu(MenuPage landingPage)
         {
-            MainPage = new MenuPage("Door Rando", landingPage);
+            MainPage = new MenuPage("TrandoPlus", landingPage);
             doorMEF = new(MainPage, TrandoPlus.GS);
             doorVIP = new(MainPage, new(0, 300), 50f, false, doorMEF.Elements);
         }
