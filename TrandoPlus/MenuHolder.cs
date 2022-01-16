@@ -18,15 +18,15 @@ namespace TrandoPlus
         private static MenuHolder _instance = null;
         internal static MenuHolder Instance => _instance ?? (_instance = new MenuHolder());
 
-        public static void OnExitMenu(Scene from, Scene to)
+        public static void OnExitMenu()
         {
-            if (from.name == "Menu_Title") _instance = null;
+            _instance = null;
         }
 
         public static void Hook()
         {
             RandomizerMenuAPI.AddMenuPage(Instance.ConstructMenu, Instance.HandleButton);
-            UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnExitMenu;
+            MenuChangerMod.OnExitMainMenu += OnExitMenu;
         }
 
         private bool HandleButton(MenuPage landingPage, out SmallButton button)
