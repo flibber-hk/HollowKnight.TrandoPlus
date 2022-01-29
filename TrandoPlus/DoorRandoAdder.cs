@@ -4,6 +4,7 @@ using RandomizerCore.Randomization;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
 using RandomizerMod.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,9 +17,43 @@ namespace TrandoPlus
             RequestBuilder.OnUpdate.Subscribe(-750f, CaptureRandomizedDoorTransitions);
             RequestBuilder.OnUpdate.Subscribe(-750f, SetDoorRandoForItemRando);
             RequestBuilder.OnUpdate.Subscribe(-750f, SetDoorRandoForAreaRando);
+
+            RequestBuilder.OnUpdate.Subscribe(100f, ApplyAreaDoorConstraint);
         }
 
         public static readonly HashSet<string> DoorRandoTransitions = new();
+
+        private static void ApplyAreaDoorConstraint(RequestBuilder rb)
+        {
+            if (!TrandoPlus.GS.RandomizeDoors) return;
+            if (!TrandoPlus.GS.AreaDoorNonInteraction) return;
+            
+            foreach (GroupBuilder gb in rb.EnumerateTransitionGroups())
+            {
+                if (gb.strategy is DefaultGroupPlacementStrategy dgps)
+                {
+                    dgps.Constraints += AreaDoorConstraint;
+                }
+            }
+
+            static bool AreaDoorConstraint(IRandoItem item, IRandoLocation loc)
+            {
+                if (DoorRandoTransitions.Contains(item.Name) && !isDoor(loc.Name)) return false;
+                if (DoorRandoTransitions.Contains(loc.Name) && !isDoor(item.Name)) return false;
+
+                return true;
+            }
+
+            static bool isDoor(string trans)
+            {
+                TransitionDef def = Data.GetTransitionDef(trans);
+                if (def.Direction == TransitionDirection.Door) return true;
+                if (Data.GetTransitionDef(def.VanillaTarget).Direction == TransitionDirection.Door) return true;
+
+                return false;
+            }
+        }
+
 
         private static void CaptureRandomizedDoorTransitions(RequestBuilder rb)
         {
