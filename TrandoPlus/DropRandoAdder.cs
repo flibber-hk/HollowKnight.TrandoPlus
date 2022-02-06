@@ -2,6 +2,7 @@
 using RandomizerMod.RC;
 using RandomizerMod.Settings;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TrandoPlus
 {
@@ -21,13 +22,13 @@ namespace TrandoPlus
 
             if (!TrandoPlus.GS.RandomizeDrops) return;
 
-            foreach (VanillaRequest pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
+            foreach (VanillaDef def in new List<VanillaDef>(rb.Vanilla.SelectMany(x => x.Value)))
             {
-                if (Data.IsTransition(pair.Item) && Data.GetTransitionDef(pair.Item).Sides == TransitionSides.OneWayOut)
+                if (Data.IsTransition(def.Item) && Data.GetTransitionDef(def.Item).Sides == TransitionSides.OneWayOut)
                 {
-                    DropRandoTransitions.Add(pair.Item);
-                    DropRandoTransitions.Add(pair.Location);
-                    rb.Vanilla.RemoveAll(pair);
+                    DropRandoTransitions.Add(def.Item);
+                    DropRandoTransitions.Add(def.Location);
+                    rb.RemoveFromVanilla(def);
                 }
             }
         }

@@ -61,14 +61,14 @@ namespace TrandoPlus
 
             if (!TrandoPlus.GS.RandomizeDoors) return;
 
-            foreach (VanillaRequest pair in new List<VanillaRequest>(rb.Vanilla.EnumerateDistinct()))
+            foreach (VanillaDef def in new List<VanillaDef>(rb.Vanilla.SelectMany(x => x.Value)))
             {
-                if ((Data.IsTransition(pair.Item) && Data.GetTransitionDef(pair.Item).Direction == TransitionDirection.Door)
-                    || (Data.IsTransition(pair.Location) && Data.GetTransitionDef(pair.Location).Direction == TransitionDirection.Door))
+                if ((Data.IsTransition(def.Item) && Data.GetTransitionDef(def.Item).Direction == TransitionDirection.Door)
+                    || (Data.IsTransition(def.Location) && Data.GetTransitionDef(def.Location).Direction == TransitionDirection.Door))
                 {
-                    DoorRandoTransitions.Add(pair.Item);
-                    DoorRandoTransitions.Add(pair.Location);
-                    rb.Vanilla.RemoveAll(pair);
+                    DoorRandoTransitions.Add(def.Item);
+                    DoorRandoTransitions.Add(def.Location);
+                    rb.RemoveFromVanilla(def);
                 }
             }
         }
