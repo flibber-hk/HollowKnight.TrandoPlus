@@ -4,6 +4,7 @@ using MenuChanger.MenuPanels;
 using MenuChanger.Extensions;
 using RandomizerMod.Menu;
 using UnityEngine.SceneManagement;
+using static RandomizerMod.Localization;
 
 namespace TrandoPlus
 {
@@ -31,7 +32,7 @@ namespace TrandoPlus
 
         private bool HandleButton(MenuPage landingPage, out SmallButton button)
         {
-            JumpToDRPage = new(landingPage, "TrandoPlus");
+            JumpToDRPage = new(landingPage, Localize("TrandoPlus"));
             JumpToDRPage.AddHideAndShowEvent(landingPage, MainPage);
             button = JumpToDRPage;
             return true;
@@ -39,9 +40,10 @@ namespace TrandoPlus
 
         private void ConstructMenu(MenuPage landingPage)
         {
-            MainPage = new MenuPage("TrandoPlus", landingPage);
+            MainPage = new MenuPage(Localize("TrandoPlus"), landingPage);
             doorMEF = new(MainPage, TrandoPlus.GS);
             doorVIP = new(MainPage, new(0, 300), 50f, false, doorMEF.Elements);
+            Localize(doorMEF);
         }
     }
 }
