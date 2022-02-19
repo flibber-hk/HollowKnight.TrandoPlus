@@ -3,7 +3,6 @@ using MenuChanger.MenuElements;
 using MenuChanger.MenuPanels;
 using MenuChanger.Extensions;
 using RandomizerMod.Menu;
-using UnityEngine.SceneManagement;
 using static RandomizerMod.Localization;
 
 namespace TrandoPlus
