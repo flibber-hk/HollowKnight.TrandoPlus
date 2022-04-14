@@ -41,7 +41,7 @@ namespace TrandoPlus
         {
             MainPage = new MenuPage(Localize("TrandoPlus"), landingPage);
             doorMEF = new(MainPage, TrandoPlus.GS);
-            doorVIP = new(MainPage, new(0, 300), 50f, false, doorMEF.Elements);
+            doorVIP = new(MainPage, new(0, 300), 50f, true, doorMEF.Elements);
             Localize(doorMEF);
         }
     }
