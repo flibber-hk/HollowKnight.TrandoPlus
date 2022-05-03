@@ -235,7 +235,7 @@ namespace TrandoPlus
         };
         public static bool ApplyStartLocationFilter(RequestBuilder rb, string start, bool area, IRandoItem item, IRandoLocation location)
         {
-            string startTrans = Data.GetStartDef(start).Transition;
+            string startTrans = RandomizerMod.Menu.RandomizerMenuAPI.GenerateStartLocationDict()[start].Transition;
             if (GetTransitionDef(rb, GetTransitionDef(rb, startTrans).VanillaTarget).Direction != TransitionDirection.Door)
             {
                 return true;
