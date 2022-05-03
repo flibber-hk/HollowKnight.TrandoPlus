@@ -75,6 +75,12 @@ namespace TrandoPlus
             }
         }
 
+        private static TransitionDef GetTransitionDef(RequestBuilder rb, string name)
+        {
+            if (rb.TryGetTransitionDef(name, out TransitionDef def)) return def;
+            return null;
+        }
+
         private static void SetDoorRandoForAreaRando(RequestBuilder rb)
         {
             if (!TrandoPlus.GS.RandomizeDoors) return;
@@ -100,9 +106,9 @@ namespace TrandoPlus
             {
                 builder = sb.Get(RBConsts.InLeftOutRightGroup);
 
-                List<string> lefts = DoorRandoTransitions.Where(x => Data.GetTransitionDef(x).Direction == TransitionDirection.Left).ToList();
-                List<string> rights = DoorRandoTransitions.Where(x => Data.GetTransitionDef(x).Direction == TransitionDirection.Right).ToList();
-                List<string> doors = DoorRandoTransitions.Where(x => Data.GetTransitionDef(x).Direction == TransitionDirection.Door).ToList();
+                List<string> lefts = DoorRandoTransitions.Where(x => GetTransitionDef(rb, x).Direction == TransitionDirection.Left).ToList();
+                List<string> rights = DoorRandoTransitions.Where(x => GetTransitionDef(rb, x).Direction == TransitionDirection.Right).ToList();
+                List<string> doors = DoorRandoTransitions.Where(x => GetTransitionDef(rb, x).Direction == TransitionDirection.Door).ToList();
                 rb.rng.PermuteInPlace(doors);
 
                 foreach (string doorTrans in doors)
@@ -123,12 +129,12 @@ namespace TrandoPlus
 
             if (ts.Coupled)
             {
-                ((DefaultGroupPlacementStrategy)builder.strategy).Constraints += (item, loc) => ApplyStartLocationFilter(rb.gs.StartLocationSettings.StartLocation, true, item, loc);
+                ((DefaultGroupPlacementStrategy)builder.strategy).Constraints += (item, loc) => ApplyStartLocationFilter(rb, rb.gs.StartLocationSettings.StartLocation, true, item, loc);
             }
 
             bool MatchedTryResolveGroup(RequestBuilder rb, string item, RequestBuilder.ElementType type, out GroupBuilder gb)
             {
-                if ((type == RequestBuilder.ElementType.Transition || Data.IsTransition(item))
+                if ((type == RequestBuilder.ElementType.Transition || rb.TryGetTransitionDef(item, out _))
                     && (DoorRandoTransitions.Contains(item)))
                 {
                     gb = builder;
@@ -177,8 +183,8 @@ namespace TrandoPlus
                     stageLabel = Consts.DoorRandoTransitionStage
                 };
 
-                List<string> nonDoors = DoorRandoTransitions.Where(x => Data.GetTransitionDef(x).Direction != TransitionDirection.Door).ToList();
-                List<string> doors = DoorRandoTransitions.Where(x => Data.GetTransitionDef(x).Direction == TransitionDirection.Door).ToList();
+                List<string> nonDoors = DoorRandoTransitions.Where(x => GetTransitionDef(rb, x).Direction != TransitionDirection.Door).ToList();
+                List<string> doors = DoorRandoTransitions.Where(x => GetTransitionDef(rb, x).Direction == TransitionDirection.Door).ToList();
 
                 ((SymmetricTransitionGroupBuilder)builder).Group1.AddRange(doors);
                 ((SymmetricTransitionGroupBuilder)builder).Group2.AddRange(nonDoors);
@@ -187,14 +193,14 @@ namespace TrandoPlus
             DefaultGroupPlacementStrategy strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy();
             if (ts.Coupled)
             {
-                strategy.Constraints += (item, loc) => ApplyStartLocationFilter(rb.gs.StartLocationSettings.StartLocation, false, item, loc);
+                strategy.Constraints += (item, loc) => ApplyStartLocationFilter(rb, rb.gs.StartLocationSettings.StartLocation, false, item, loc);
             }
             builder.strategy = strategy;
             sb.Add(builder);
 
             bool MatchedTryResolveGroup(RequestBuilder rb, string item, RequestBuilder.ElementType type, out GroupBuilder gb)
             {
-                if ((type == RequestBuilder.ElementType.Transition || Data.IsTransition(item))
+                if ((type == RequestBuilder.ElementType.Transition || rb.TryGetTransitionDef(item, out _))
                     && (DoorRandoTransitions.Contains(item)))
                 {
                     gb = builder;
@@ -227,10 +233,10 @@ namespace TrandoPlus
             "Ruins1_04[door1]",
             "RestingGrounds_12[door1]"
         };
-        public static bool ApplyStartLocationFilter(string start, bool area, IRandoItem item, IRandoLocation location)
+        public static bool ApplyStartLocationFilter(RequestBuilder rb, string start, bool area, IRandoItem item, IRandoLocation location)
         {
             string startTrans = Data.GetStartDef(start).Transition;
-            if (Data.GetTransitionDef(Data.GetTransitionDef(startTrans).VanillaTarget).Direction != TransitionDirection.Door)
+            if (GetTransitionDef(rb, GetTransitionDef(rb, startTrans).VanillaTarget).Direction != TransitionDirection.Door)
             {
                 return true;
             }
