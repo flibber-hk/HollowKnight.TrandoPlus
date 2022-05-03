@@ -18,7 +18,7 @@ namespace TrandoPlus
             {
                 if (gb.strategy is DefaultGroupPlacementStrategy dgps)
                 {
-                    dgps.Constraints += Conditions.AdjacentBenchConstraint;
+                    dgps.Constraints += Conditions.GetAdjacentBenchConstraint(rb);
                 }
             }
         }

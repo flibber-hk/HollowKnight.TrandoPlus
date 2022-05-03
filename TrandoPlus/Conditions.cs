@@ -1,6 +1,8 @@
-﻿using ItemChanger;
+﻿using System;
+using ItemChanger;
 using RandomizerCore;
 using RandomizerMod.RandomizerData;
+using RandomizerMod.RC;
 using System.Collections.Generic;
 
 namespace TrandoPlus
@@ -68,15 +70,20 @@ namespace TrandoPlus
 
         public static bool IsBenchScene(string sceneName) => benchScenes.Contains(sceneName);
 
-        public static bool AdjacentBenchConstraint(IRandoItem item, IRandoLocation loc)
+        public static Func<IRandoItem, IRandoLocation, bool> GetAdjacentBenchConstraint(RequestBuilder rb)
         {
-            if (!Data.IsTransition(item.Name)) return true;
-            if (!Conditions.IsBenchScene(Data.GetTransitionDef(item.Name).SceneName)) return true;
+            bool AdjacentBenchConstraint(IRandoItem item, IRandoLocation loc)
+            {
+                if (!rb.TryGetTransitionDef(item.Name, out TransitionDef itemTrans)) return true;
+                if (!Conditions.IsBenchScene(itemTrans.SceneName)) return true;
 
-            if (!Data.IsTransition(loc.Name)) return true;
-            if (!Conditions.IsBenchScene(Data.GetTransitionDef(loc.Name).SceneName)) return true;
+                if (!rb.TryGetTransitionDef(loc.Name, out TransitionDef locTrans)) return true;
+                if (!Conditions.IsBenchScene(locTrans.SceneName)) return true;
 
-            return false;
+                return false;
+            }
+
+            return AdjacentBenchConstraint;
         }
     }
 }

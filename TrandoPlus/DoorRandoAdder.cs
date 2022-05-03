@@ -36,7 +36,7 @@ namespace TrandoPlus
                 }
             }
 
-            static bool AreaDoorConstraint(IRandoItem item, IRandoLocation loc)
+            bool AreaDoorConstraint(IRandoItem item, IRandoLocation loc)
             {
                 if (DoorRandoTransitions.Contains(item.Name) && !isDoor(loc.Name)) return false;
                 if (DoorRandoTransitions.Contains(loc.Name) && !isDoor(item.Name)) return false;
@@ -44,11 +44,13 @@ namespace TrandoPlus
                 return true;
             }
 
-            static bool isDoor(string trans)
+            bool isDoor(string trans)
             {
-                TransitionDef def = Data.GetTransitionDef(trans);
+                if (!rb.TryGetTransitionDef(trans, out TransitionDef def)) return false;
                 if (def.Direction == TransitionDirection.Door) return true;
-                if (Data.GetTransitionDef(def.VanillaTarget).Direction == TransitionDirection.Door) return true;
+
+                if (!rb.TryGetTransitionDef(def.VanillaTarget, out TransitionDef tDef)) return false;
+                if (tDef.Direction == TransitionDirection.Door) return true;
 
                 return false;
             }
@@ -63,8 +65,8 @@ namespace TrandoPlus
 
             foreach (VanillaDef def in new List<VanillaDef>(rb.Vanilla.SelectMany(x => x.Value)))
             {
-                if ((Data.IsTransition(def.Item) && Data.GetTransitionDef(def.Item).Direction == TransitionDirection.Door)
-                    || (Data.IsTransition(def.Location) && Data.GetTransitionDef(def.Location).Direction == TransitionDirection.Door))
+                if ((rb.TryGetTransitionDef(def.Item, out TransitionDef iDef) && iDef.Direction == TransitionDirection.Door)
+                    || (rb.TryGetTransitionDef(def.Location, out TransitionDef lDef) && lDef.Direction == TransitionDirection.Door))
                 {
                     DoorRandoTransitions.Add(def.Item);
                     DoorRandoTransitions.Add(def.Location);

@@ -22,13 +22,13 @@ namespace TrandoPlus
 
             if (!TrandoPlus.GS.RandomizeDrops) return;
 
-            foreach (VanillaDef def in new List<VanillaDef>(rb.Vanilla.SelectMany(x => x.Value)))
+            foreach (VanillaDef vDef in new List<VanillaDef>(rb.Vanilla.SelectMany(x => x.Value)))
             {
-                if (Data.IsTransition(def.Item) && Data.GetTransitionDef(def.Item).Sides == TransitionSides.OneWayOut)
+                if (rb.TryGetTransitionDef(vDef.Item, out TransitionDef tDef) && tDef.Sides == TransitionSides.OneWayOut)
                 {
-                    DropRandoTransitions.Add(def.Item);
-                    DropRandoTransitions.Add(def.Location);
-                    rb.RemoveFromVanilla(def);
+                    DropRandoTransitions.Add(vDef.Item);
+                    DropRandoTransitions.Add(vDef.Location);
+                    rb.RemoveFromVanilla(vDef);
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace TrandoPlus
 
             foreach (string trans in DropRandoTransitions)
             {
-                if (Data.GetTransitionDef(trans).Sides == TransitionSides.OneWayIn)
+                if (rb.TryGetTransitionDef(trans, out TransitionDef tDef) && tDef.Sides == TransitionSides.OneWayIn)
                 {
                     tgb.Sources.Add(trans);
                 }
