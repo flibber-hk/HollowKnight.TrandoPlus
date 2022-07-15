@@ -1,4 +1,5 @@
-﻿using MenuChanger;
+﻿using System.Linq;
+using MenuChanger;
 using MenuChanger.MenuElements;
 using MenuChanger.MenuPanels;
 using MenuChanger.Extensions;
@@ -41,7 +42,18 @@ namespace TrandoPlus
         {
             MainPage = new MenuPage(Localize("TrandoPlus"), landingPage);
             doorMEF = new(MainPage, TrandoPlus.GS);
-            doorVIP = new(MainPage, new(0, 300), 50f, true, doorMEF.Elements);
+
+            IValueElement[] elements = doorMEF.Elements;
+
+            if (Modding.ModHooks.GetMod("RandoPlus") is null)
+            {
+                elements = elements
+                    .Where(x => x != doorMEF.ElementLookup[nameof(GlobalSettings.LimitedRoomRando)])
+                    .Where(x => x != doorMEF.ElementLookup[nameof(GlobalSettings.LimitedRoomRandoFraction)])
+                    .ToArray();
+            }
+
+            doorVIP = new(MainPage, new(0, 300), 75f, true, elements);
             Localize(doorMEF);
         }
     }

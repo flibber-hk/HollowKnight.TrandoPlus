@@ -30,3 +30,9 @@ transition - though it's not enforced that transitions added by door rando must 
 - In area rando, this only considers benches in the room, not benches in the area.
 - Rooms containing tram stations are considered bench rooms; other questionable rooms (such as Distant Village Stag, Palace Grounds and Junk Pit) are not.
 - This setting has no effect in item rando (where all three White Palace bench rooms are adjacent!)
+
+### Limited Room Rando
+- Variant of Room Rando that removes many rooms.
+- The proportion of rooms that are left can be changed.
+- Locations will receive multiple items to compensate for the removed locations.
+- Requires RandoPlus to be installed (even if none of the RandoPlus settings are enabled).
