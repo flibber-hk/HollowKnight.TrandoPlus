@@ -8,7 +8,7 @@
         public bool ProhibitAdjacentBenches = false;
         public bool LimitedRoomRando = false;
 
-        [MenuChanger.Attributes.MenuRange(0.15f, 0.65f)]
-        public float LimitedRoomRandoFraction = 0.35f;
+        [MenuChanger.Attributes.MenuRange(0.2f, 0.7f)]
+        public float LimitedRoomRandoFraction = 0.4f;
     }
 }
