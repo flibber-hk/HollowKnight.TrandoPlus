@@ -34,5 +34,6 @@ transition - though it's not enforced that transitions added by door rando must 
 ### Limited Room Rando
 - Variant of Room Rando that removes many rooms.
 - The proportion of rooms that are left can be changed.
-- Locations will receive multiple items to compensate for the removed locations.
+- Locations will receive multiple items to compensate for the removed locations - the PreferMultiShiny setting in RandoPlus affects placements
+if limited room rando is enabled.
 - Requires RandoPlus to be installed (even if none of the RandoPlus settings are enabled).
