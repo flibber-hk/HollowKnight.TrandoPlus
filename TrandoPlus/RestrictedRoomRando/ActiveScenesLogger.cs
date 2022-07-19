@@ -22,6 +22,8 @@ namespace TrandoPlus.RestrictedRoomRando
             {
                 sb.AppendLine($" - {scene}");
             }
+            sb.AppendLine();
+            sb.AppendLine($"Total scenes: {selectedScenes.Count}");
 
             LogManager.Write(sb.ToString(), "LimitedRoomRandoScenes.txt");
         }
