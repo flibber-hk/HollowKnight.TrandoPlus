@@ -84,7 +84,7 @@ namespace TrandoPlus.RestrictedRoomRando
             {
                 if (!selectedScenes.Contains(scene))
                 {
-                    rb.RemoveItemByName(scene);
+                    rb.RemoveItemByName(item);
                 }
             }
 
