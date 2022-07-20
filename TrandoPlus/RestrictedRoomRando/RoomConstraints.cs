@@ -84,10 +84,6 @@ namespace TrandoPlus.RestrictedRoomRando
             yield return new(SceneNames.Room_nailmaster_03, SceneNames.Ruins1_27);
             yield return new(SceneNames.Grimm_Divine, SceneNames.Ruins1_05b);
             yield return new(SceneNames.Grimm_Divine, SceneNames.Ruins1_27);
-
-            // Ruins1_23[top1] needs to be reachable in uncoupled room rando; without precise movement (coming from above), this requires Ruins1_30 so the floor can be broken.
-            // Remove this constraint if the logic for Ruins1_23[top1] is modified to include Ruins1_23[top1] + LEFTCLAW + RIGHTSUPERDASH + WINGS (for example).
-            yield return new(SceneNames.Ruins1_23, SceneNames.Ruins1_30, rb => !rb.gs.SkipSettings.PreciseMovement);
         }
 
         private static bool HardDreamBosses(RequestBuilder rb)

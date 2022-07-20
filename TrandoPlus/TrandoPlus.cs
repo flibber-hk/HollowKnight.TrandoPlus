@@ -33,7 +33,7 @@ namespace TrandoPlus
             if (rando) DoorRandoAdder.Hook();
             if (rando) DropRandoAdder.Hook();
             if (rando) ConditionManager.Hook();
-
+            if (rando) RemoveEmptyRooms.Hook();
             if (rando && ModHooks.GetMod("RandoPlus") is Mod) RestrictedRoomRando.RestrictedRoomRandoManager.Hook();
 
             if (rando) HookSettingsLog();

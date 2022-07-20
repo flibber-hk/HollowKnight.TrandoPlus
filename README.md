@@ -31,9 +31,13 @@ transition - though it's not enforced that transitions added by door rando must 
 - Rooms containing tram stations are considered bench rooms; other questionable rooms (such as Distant Village Stag, Palace Grounds and Junk Pit) are not.
 - This setting has no effect in item rando (where all three White Palace bench rooms are adjacent!)
 
+### Remove Empty Rooms
+- Variant of Room Rando that removes all rooms without checks, except for rooms required for checks in other rooms.
+- This mode is only available in unmatched room rando.
+
 ### Limited Room Rando
-- Variant of Room Rando that removes many rooms.
+- Variant of Room Rando that removes many rooms at random.
 - The proportion of rooms that are left can be changed.
 - Locations will receive multiple items to compensate for the removed locations - the PreferMultiShiny setting in RandoPlus affects placements
 if limited room rando is enabled.
-- Requires RandoPlus to be installed (even if none of the RandoPlus settings are enabled).
+- Will not be available if RandoPlus is not installed - RandoPlus does not need to be active for this setting to function, though.
