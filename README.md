@@ -34,6 +34,7 @@ transition - though it's not enforced that transitions added by door rando must 
 ### Remove Empty Rooms
 - Variant of Room Rando that removes all rooms without checks, except for rooms required for checks in other rooms.
 - This mode is only available in unmatched room rando.
+- A log is created in the Randomizer logs folder listing the rooms which were removed.
 
 ### Limited Room Rando
 - Variant of Room Rando that removes many rooms at random.
@@ -41,3 +42,4 @@ transition - though it's not enforced that transitions added by door rando must 
 - Locations will receive multiple items to compensate for the removed locations - the PreferMultiShiny setting in RandoPlus affects placements
 if limited room rando is enabled.
 - Will not be available if RandoPlus is not installed - RandoPlus does not need to be active for this setting to function, though.
+- A log is created in the Randomizer logs folder listing the rooms which were not removed.
