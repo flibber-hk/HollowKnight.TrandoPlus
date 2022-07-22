@@ -4,4 +4,4 @@ ItemChanger
 MenuChanger
 BenchRando
 RandoPlus
-RandomizableLevers
+Randomizable Levers
