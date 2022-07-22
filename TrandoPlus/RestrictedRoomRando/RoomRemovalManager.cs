@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TrandoPlus.RestrictedRoomRando
 {
-    public static class RestrictedRoomRandoManager
+    public static class RoomRemovalManager
     {
         public static void Hook()
         {

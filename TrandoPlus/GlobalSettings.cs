@@ -9,6 +9,8 @@
 
         public bool RemoveEmptyRooms = false;
         public bool LimitedRoomRando = false;
+
+        public bool AnySceneRemoval => RemoveEmptyRooms || LimitedRoomRando;
         
         [MenuChanger.Attributes.MenuRange(0.2f, 0.7f)]
         public float LimitedRoomRandoFraction = 0.4f;

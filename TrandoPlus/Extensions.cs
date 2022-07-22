@@ -16,5 +16,10 @@ namespace TrandoPlus
             }
             dict[key] = value + amount;
         }
+
+        /// <summary>
+        /// Because unity doesn't Enumerable.ToHashSet
+        /// </summary>
+        public static HashSet<T> AsHashSet<T>(this IEnumerable<T> e) => new(e);
     }
 }

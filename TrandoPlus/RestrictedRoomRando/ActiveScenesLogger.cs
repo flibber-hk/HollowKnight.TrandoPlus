@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using RandomizerMod.Logging;
 
 namespace TrandoPlus.RestrictedRoomRando
@@ -11,21 +9,23 @@ namespace TrandoPlus.RestrictedRoomRando
     {
         public override void Log(LogArguments args)
         {
-            if (RequestMaker.selector is null) return;
+            if (RequestMaker.Selector is null) return;
 
-            HashSet<string> selectedScenes = RequestMaker.selector.SelectedScenes;
+            HashSet<string> selectedScenes = RequestMaker.Selector.SelectedSceneNames;
 
             StringBuilder sb = new();
-            sb.AppendLine("Active scenes for limited room rando:");
+            sb.AppendLine($"Available scenes for limited room rando with seed {args.gs.Seed}:");
             sb.AppendLine();
-            foreach (string scene in selectedScenes)
+            foreach (string scene in selectedScenes.OrderBy(x => x))
             {
                 sb.AppendLine($" - {scene}");
             }
             sb.AppendLine();
-            sb.AppendLine($"Total scenes: {selectedScenes.Count}");
+            sb.AppendLine($"Total selected scenes: {selectedScenes.Count}/{RequestMaker.Selector.SceneCount}.");
+            sb.AppendLine($"Total selected transitions: {RequestMaker.Selector.SelectedTransitionCount}/{RequestMaker.Selector.TransitionCount}.");
 
-            LogManager.Write(sb.ToString(), "LimitedRoomRandoScenes.txt");
+
+            LogManager.Write(sb.ToString(), "SelectedScenesSpoiler.txt");
         }
     }
 }
