@@ -43,3 +43,5 @@ transition - though it's not enforced that transitions added by door rando must 
 if limited room rando is enabled.
 - Will not be available if RandoPlus is not installed - RandoPlus does not need to be active for this setting to function, though.
 - A log is created in the Randomizer logs folder listing the rooms which were not removed.
+
+Both the Remove Empty Rooms and Limited Room Rando settings make the number of attempts required to generate the seed increase.
