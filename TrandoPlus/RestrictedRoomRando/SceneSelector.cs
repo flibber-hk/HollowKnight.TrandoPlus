@@ -345,6 +345,7 @@ namespace TrandoPlus.RestrictedRoomRando
         /// <summary>
         /// Add enough hubs to ensure that the world isn't saturated with one-transition scenes.
         /// This is not necessary in uncoupled mode.
+        /// Actually it isn't necessary at all (hence the ratio of 2.0) but there will be more attempts.
         /// </summary>
         private void AddHubs()
         {
@@ -362,7 +363,7 @@ namespace TrandoPlus.RestrictedRoomRando
 
             OnSelectScene += Remove;
 
-            while (SelectedTransitionCount < 2.2f * SelectedSceneCount)
+            while (SelectedTransitionCount < 2.0f * SelectedSceneCount)
             {
                 if (availableHubScenes.Count == 0)
                 {
