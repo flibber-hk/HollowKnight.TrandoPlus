@@ -367,6 +367,7 @@ namespace TrandoPlus.RestrictedRoomRando
 
             while (SelectedTransitionCount < 2.1f * SelectedSceneCount)
             {
+                // Spaghetti alert
                 if (availableHubScenes.Count == 0)
                 {
                     availableHubScenes = TransitionsPerScene
@@ -375,6 +376,16 @@ namespace TrandoPlus.RestrictedRoomRando
                         .Select(kvp => kvp.Key)
                         .OrderBy(scene => scene)
                         .ToList();
+
+                    if (availableHubScenes.Count == 0)
+                    {
+                        availableHubScenes = TransitionsPerScene
+                            .Where(kvp => !SelectedSceneNames.Contains(kvp.Key))
+                            .Where(kvp => kvp.Value >= 3)
+                            .Select(kvp => kvp.Key)
+                            .OrderBy(scene => scene)
+                            .ToList();
+                    }
                 }
 
                 string selectedHub = rb.rng.Next(availableHubScenes);
