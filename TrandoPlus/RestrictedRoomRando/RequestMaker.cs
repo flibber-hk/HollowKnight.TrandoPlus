@@ -32,7 +32,7 @@ namespace TrandoPlus.RestrictedRoomRando
             Selector = new(rb);
             Action<RequestBuilder, SceneSelector> sceneSelectionAction = null;
 
-            if (TrandoPlus.GS.LimitedRoomRando)
+            if (TrandoPlus.GS.LimitedRoomRandoPlayable)
             {
                 sceneSelectionAction += AddLimitedRoomRandoScenes;
             }
@@ -45,7 +45,7 @@ namespace TrandoPlus.RestrictedRoomRando
             Selector.Run(sceneSelectionAction);
             Selector.Apply();
 
-            if (TrandoPlus.GS.LimitedRoomRando)
+            if (TrandoPlus.GS.LimitedRoomRandoPlayable)
             {
                 ApplyPadders(rb);
             }
