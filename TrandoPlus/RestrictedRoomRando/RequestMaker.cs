@@ -13,7 +13,7 @@ namespace TrandoPlus.RestrictedRoomRando
 
         public static void Hook()
         {
-            RequestBuilder.OnUpdate.Subscribe(-50_000, InstantiateSceneSelector);
+            RequestBuilder.OnUpdate.Subscribe(200, InstantiateSceneSelector);
 
             RequestBuilder.OnUpdate.Subscribe(250, SelectTransitions);
         }
@@ -46,19 +46,17 @@ namespace TrandoPlus.RestrictedRoomRando
                 return;
             }
 
-            Action<RequestBuilder, SceneSelector> sceneSelectionAction = null;
-
             if (TrandoPlus.GS.LimitedRoomRandoPlayable)
             {
-                sceneSelectionAction += AddLimitedRoomRandoScenes;
+                Selector.OnSceneSelectorRun.Subscribe(0f, AddLimitedRoomRandoScenes);
             }
 
             if (TrandoPlus.GS.RemoveEmptyRooms)
             {
-                sceneSelectionAction += AddRoomsWithItems;
+                Selector.OnSceneSelectorRun.Subscribe(10f, AddRoomsWithItems);
             }
 
-            Selector.Run(sceneSelectionAction);
+            Selector.Run();
             Selector.Apply();
 
             if (TrandoPlus.GS.LimitedRoomRandoPlayable)

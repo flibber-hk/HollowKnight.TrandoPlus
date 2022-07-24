@@ -4,6 +4,7 @@ using System.Linq;
 using ItemChanger;
 using Modding;
 using RandomizerCore.Extensions;
+using RandomizerMod;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
 
@@ -11,6 +12,12 @@ namespace TrandoPlus.RestrictedRoomRando
 {
     public class SceneSelector
     {
+        /// <summary>
+        /// Event invoked while the selector is running.
+        /// </summary>
+        public PriorityEvent<Action<RequestBuilder, SceneSelector>> OnSceneSelectorRun;
+        private PriorityEvent<Action<RequestBuilder, SceneSelector>>.IPriorityEventOwner _onSceneSelectorRunOwner;
+
         /// <summary>
         /// A mapping stag name -> scene name
         /// </summary>
@@ -42,6 +49,8 @@ namespace TrandoPlus.RestrictedRoomRando
 
         /// <summary>
         /// If s -> ts, then if s is present each element of ts must be present.
+        /// We write this as a hashset with fast source lookup because removing scenes
+        /// is unlikely, and I don't want to deal with multiple synced dictionaries.
         /// </summary>
         private readonly Dictionary<string, HashSet<string>> Constraints;
 
@@ -129,6 +138,8 @@ namespace TrandoPlus.RestrictedRoomRando
 
         public SceneSelector(RequestBuilder rb)
         {
+            OnSceneSelectorRun = new(out _onSceneSelectorRunOwner);
+
             this.rb = rb;
             this.Constraints = GenerateConstraints(rb);
 
@@ -206,7 +217,14 @@ namespace TrandoPlus.RestrictedRoomRando
             }
         }
 
+        /// <summary>
+        /// Event invoked whenever a scene that was not previously selected becomes selected.
+        /// </summary>
         public event Action<string> OnSelectScene;
+        /// <summary>
+        /// Event invoked whenever a previously selected scene is removed.
+        /// </summary>
+        public event Action<string> OnRemoveScene;
 
         /// <summary>
         /// Mark the supplied scene as selected.
@@ -219,7 +237,7 @@ namespace TrandoPlus.RestrictedRoomRando
             }
             if (!AllSceneNames.Contains(scene))
             {
-                throw new ArgumentException($"Scene {scene} not recognised!");
+                throw new ArgumentException($"{nameof(SelectScene)}: Scene {scene} not recognised!");
             }
 
             SelectedSceneNames.Add(scene);
@@ -235,9 +253,35 @@ namespace TrandoPlus.RestrictedRoomRando
         }
 
         /// <summary>
+        /// Deselect the given scene, if it was already selected.
+        /// </summary>
+        public void RemoveScene(string scene)
+        {
+            if (!SelectedSceneNames.Contains(scene))
+            {
+                return;
+            }
+            if (!AllSceneNames.Contains(scene))
+            {
+                throw new ArgumentException($"{nameof(RemoveScene)}: Scene {scene} not recognised!");
+            }
+
+            SelectedSceneNames.Remove(scene);
+            OnRemoveScene?.Invoke(scene);
+
+            foreach ((string source, HashSet<string> targets) in Constraints)
+            {
+                if (targets.Contains(scene))
+                {
+                    RemoveScene(source);
+                }
+            }
+        }
+
+        /// <summary>
         /// Initialize the Scene Selector by adding some constraints and some required scenes.
         /// </summary>
-        public virtual void Initialize()
+        protected virtual void Initialize()
         {
             // Add a randomly selected scene constraining stag nest stag, to prevent the unlikely scenario where they
             // select all 9 stag scenes but not stag nest itself.
@@ -279,13 +323,27 @@ namespace TrandoPlus.RestrictedRoomRando
         /// <summary>
         /// Close the scene selector to ensure a seed that is likely to generate successfully.
         /// </summary>
-        public void Close()
+        protected virtual void Close()
         {
             AddGrubScenes();
             AddEssenceScenes();
             AddHubs();
             BalanceTransitions();
         }
+
+        /// <summary>
+        /// Run the selector to generate a list of scenes.
+        /// </summary>
+        public void Run()
+        {
+            Initialize();
+            foreach (Action<RequestBuilder, SceneSelector> toInvoke in _onSceneSelectorRunOwner.GetSubscribers())
+            {
+                toInvoke?.Invoke(rb, this);
+            }
+            Close();
+        }
+
 
         /// <summary>
         /// Make sure there are enough scenes with grubs if grubs are not randomized.
@@ -324,22 +382,6 @@ namespace TrandoPlus.RestrictedRoomRando
             // White Defender, Marmu, Soul Tyrant and Failed Champion
             // provide enough essence between them.
         }
-
-
-        /// <summary>
-        /// Run the selector to generate a list of scenes.
-        /// Equivalent to:
-        ///     Initialize();
-        ///     runSceneSelection(rb, this);
-        ///     Close();
-        /// </summary>
-        public void Run(Action<RequestBuilder, SceneSelector> runSceneSelection = null)
-        {
-            Initialize();
-            runSceneSelection?.Invoke(rb, this);
-            Close();
-        }
-
 
 
         /// <summary>
