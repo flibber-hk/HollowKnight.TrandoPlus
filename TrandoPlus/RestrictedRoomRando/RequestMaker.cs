@@ -9,14 +9,17 @@ namespace TrandoPlus.RestrictedRoomRando
 {
     public static class RequestMaker
     {
-        public static SceneSelector Selector;
+        public static SceneSelector Selector { get; set; }
 
         public static void Hook()
         {
+            RequestBuilder.OnUpdate.Subscribe(-50_000, InstantiateSceneSelector);
+
             RequestBuilder.OnUpdate.Subscribe(250, SelectTransitions);
         }
 
-        private static void SelectTransitions(RequestBuilder rb)
+        // Instantiate scene selector early, so that people have the opportunity to add constraints and callbacks to it if necessary.
+        private static void InstantiateSceneSelector(RequestBuilder rb)
         {
             Selector = null;
 
@@ -30,6 +33,19 @@ namespace TrandoPlus.RestrictedRoomRando
             }
 
             Selector = new(rb);
+        }
+
+        private static void SelectTransitions(RequestBuilder rb)
+        {
+            if (rb.gs.TransitionSettings.Mode != RandomizerMod.Settings.TransitionSettings.TransitionMode.RoomRandomizer)
+            {
+                return;
+            }
+            if (!TrandoPlus.GS.AnySceneRemoval)
+            {
+                return;
+            }
+
             Action<RequestBuilder, SceneSelector> sceneSelectionAction = null;
 
             if (TrandoPlus.GS.LimitedRoomRandoPlayable)

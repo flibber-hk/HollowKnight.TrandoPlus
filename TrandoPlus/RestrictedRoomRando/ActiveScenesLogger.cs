@@ -16,7 +16,12 @@ namespace TrandoPlus.RestrictedRoomRando
             StringBuilder sb = new();
             sb.AppendLine($"Available scenes for limited room rando with seed {args.gs.Seed}:");
             sb.AppendLine();
-            foreach (string scene in selectedScenes.OrderBy(x => x))
+            foreach (string scene in selectedScenes
+#if !DEBUG
+                // In debug mode, showing the scenes in the order they were added may be helpful
+                .OrderBy(x => x)
+#endif
+                )
             {
                 sb.AppendLine($" - {scene}");
             }
