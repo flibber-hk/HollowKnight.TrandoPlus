@@ -57,7 +57,7 @@ namespace TrandoPlus.RestrictedRoomRando
             }
 
             Selector.Run();
-            Selector.Apply();
+            Selector.Apply(rb);
 
             if (TrandoPlus.GS.LimitedRoomRandoPlayable)
             {

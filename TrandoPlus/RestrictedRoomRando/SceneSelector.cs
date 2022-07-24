@@ -373,14 +373,72 @@ namespace TrandoPlus.RestrictedRoomRando
         }
 
         /// <summary>
-        /// Make sure there is enough reachable essence.
+        /// Make sure there is enough reachable essence. Not necessary with default settings because
+        /// White Defender, Marmu, Failed Champion and 
         /// </summary>
         private void AddEssenceScenes()
         {
-            // TODO - implement this.
-            // This is unlikely to matter with standard pool/cost settings, though, because
-            // White Defender, Marmu, Soul Tyrant and Failed Champion
-            // provide enough essence between them.
+            Dictionary<string, (int essence, string sceneName)> essenceData = new();
+            int currentEssence = 0;
+
+            int targetEssence = rb.gs.CostSettings.MaximumEssenceCost + rb.gs.CostSettings.EssenceTolerance;
+            HashSet<string> allItems = rb.EnumerateItemGroups().SelectMany(igb => igb.Items.EnumerateDistinct()).AsHashSet();
+
+            foreach (string itemName in Finder.GetFullItemList().Keys.Where(x => x.StartsWith("Boss_Essence-") || x.StartsWith("Whispering_Root-")))
+            {
+                // WD and GPZ require multiple scenes, so we exclude them
+                if (itemName == ItemNames.Boss_Essence_White_Defender || itemName == ItemNames.Boss_Essence_Grey_Prince_Zote)
+                {
+                    continue;
+                }
+
+                int essence = ((ItemChanger.Items.EssenceItem)Finder.GetItem(itemName)).amount;
+                string rawSceneName = Finder.GetLocation(itemName).sceneName;
+                string sceneName = ItemChanger.Util.SceneUtil.TryGetSuperScene(rawSceneName, out string super) ? super : rawSceneName;
+
+                // If the item is randomized, it will always be reachable
+                if (allItems.Contains(itemName) || SelectedSceneNames.Contains(sceneName))
+                {
+                    currentEssence += essence;
+                }
+                else
+                {
+                    essenceData[itemName] = (essence, sceneName);
+                }
+            }
+
+            void AddEssenceScene(string selectedScene)
+            {
+                List<string> toRemove = new();
+                foreach ((string item, (int essence, string scene)) in essenceData)
+                {
+                    if (scene == selectedScene)
+                    {
+                        currentEssence += essence;
+                        toRemove.Add(item);
+                    }
+                }
+
+                foreach (string item in toRemove)
+                {
+                    essenceData.Remove(item);
+                }
+            }
+
+            OnSelectScene += AddEssenceScene;
+            
+            while (currentEssence < targetEssence)
+            {
+                Bucket<string> weightedScenes = new();
+                foreach ((string item, (int essence, string scene)) in essenceData.OrderBy(kvp => kvp.Key))
+                {
+                    weightedScenes.Increment(scene, essence);
+                }
+
+                SelectScene(weightedScenes.ToWeightedArray().Next(rb.rng));
+            }
+            
+            OnSelectScene -= AddEssenceScene;
         }
 
 
@@ -465,91 +523,6 @@ namespace TrandoPlus.RestrictedRoomRando
             }
 
             OnSelectScene -= ReBalance;
-        }
-
-        /// <summary>
-        /// Apply the list of selected scenes to the request builder, by removing transitions.
-        /// </summary>
-        public void Apply()
-        {
-            // Remove transitions from a missing scene
-            foreach (string trans in AllTransitionNames)
-            {
-                if (rb.TryGetTransitionDef(trans, out TransitionDef def) && !SelectedSceneNames.Contains(def.SceneName))
-                {
-                    rb.RemoveTransitionByName(trans);
-                }
-            }
-
-            // Make sure that one way drops are balanced
-            int dropEntries = AllTransitionNames
-                .Where(t => rb.TryGetTransitionDef(t, out TransitionDef def) && SelectedSceneNames.Contains(def.SceneName) && def.Sides == TransitionSides.OneWayIn)
-                .Count();
-            List<string> dropExits = AllTransitionNames
-                .Where(t => rb.TryGetTransitionDef(t, out TransitionDef def) && SelectedSceneNames.Contains(def.SceneName) && def.Sides == TransitionSides.OneWayOut)
-                .OrderBy(t => t)
-                .ToList();
-            while (dropExits.Count > dropEntries)
-            {
-                string removedTransition = rb.rng.Next(dropExits.Where(x => !x.StartsWith(SceneNames.Fungus2_25)).ToList());
-                dropExits.Remove(removedTransition);
-                rb.RemoveTransitionByName(removedTransition);
-            }
-
-            // Remove locations
-            rb.RemoveLocationsWhere(l => !rb.TryGetLocationDef(l, out LocationDef def)
-                || def.SceneName == null
-                || !SelectedSceneNames.Contains(def.SceneName));
-
-            // Remove stag items if their targets do not exist
-            foreach ((string item, string scene) in StagScenes)
-            {
-                if (!SelectedSceneNames.Contains(scene))
-                {
-                    rb.RemoveItemByName(item);
-                }
-            }
-
-            // Remove bench items if their targets do not exist
-            if (ModHooks.GetMod("BenchRando") is Mod) RemoveBenches(rb, SelectedSceneNames);
-            // Remove levers that unlock stags if necessary
-            if (ModHooks.GetMod("Randomizable Levers") is Mod) RemoveLevers(rb, SelectedSceneNames);
-        }
-
-        private static void RemoveBenches(RequestBuilder rb, HashSet<string> selectedScenes)
-        {
-            if (!BenchRando.Rando.RandoInterop.IsEnabled())
-            {
-                return;
-            }
-
-            foreach (string bench in BenchRando.Rando.RandoInterop.LS.Benches)
-            {
-                string scene = BenchRando.BRData.BenchLookup[bench].SceneName;
-                if (!selectedScenes.Contains(scene))
-                {
-                    rb.RemoveItemByName(bench);
-                }
-            }
-        }
-
-        private static void RemoveLevers(RequestBuilder rb, HashSet<string> selectedScenes)
-        {
-            if (!RandomizableLevers.RandomizableLevers.GS.RandoSettings.Any)
-            {
-                return;
-            }
-
-            // TODO - remove all useless levers
-            
-            if (!selectedScenes.Contains(SceneNames.RestingGrounds_09))
-            {
-                rb.RemoveItemByName(RandomizableLevers.LeverNames.Lever_Resting_Grounds_Stag);
-            }
-            if (!selectedScenes.Contains(SceneNames.Room_Town_Stag_Station))
-            {
-                rb.RemoveItemByName(RandomizableLevers.LeverNames.Switch_Dirtmouth_Stag);
-            }
         }
 
         public static HashSet<string> GetTransitions(RequestBuilder rb)
