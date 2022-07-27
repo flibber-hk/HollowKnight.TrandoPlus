@@ -13,7 +13,7 @@ namespace TrandoPlus.RestrictedRoomRando
     public static class SceneSelectorExtensions
     {
         /// <summary>
-        /// Apply the list of selected scenes to the request builder, by removing transitions.
+        /// Apply the list of selected scenes to the request builder, by removing transitions. Does not mutate the selector.
         /// </summary>
         public static void Apply(this SceneSelector selector, RequestBuilder rb)
         {

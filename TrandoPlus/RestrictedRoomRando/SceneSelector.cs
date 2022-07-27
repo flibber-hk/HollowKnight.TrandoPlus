@@ -78,7 +78,7 @@ namespace TrandoPlus.RestrictedRoomRando
         /// <summary>
         /// The number of scenes the selector is aware of.
         /// </summary>
-        public int SceneCount => AllSceneNames.Count;
+        public int TotalSceneCount => AllSceneNames.Count;
 
         /// <summary>
         /// The total number of transitions the selector is aware of.
@@ -279,7 +279,7 @@ namespace TrandoPlus.RestrictedRoomRando
         }
 
         /// <summary>
-        /// Initialize the Scene Selector by adding some constraints and some required scenes.
+        /// Initialize the Scene Selector by adding some constraints.
         /// </summary>
         protected virtual void Initialize()
         {
@@ -309,7 +309,22 @@ namespace TrandoPlus.RestrictedRoomRando
                     AddConstraint(target, source);
                 }
             }
+        }
 
+        /// <summary>
+        /// Close the scene selector to ensure a seed that is likely to generate successfully by adding scenes.
+        /// </summary>
+        protected virtual void Close()
+        {
+            AddRequiredScenes();
+            AddGrubScenes();
+            AddEssenceScenes();
+            AddHubs();
+            BalanceTransitions();
+        }
+
+        private void AddRequiredScenes()
+        {
             // Require Black Egg temple for True Ending
             SelectScene(SceneNames.Room_temple);
             // Require the start scene for obvious reasons
@@ -318,17 +333,6 @@ namespace TrandoPlus.RestrictedRoomRando
             (string shop, string shopScene) = rb.rng.Next(Shops);
             SelectScene(shopScene);
             SelectedShop = shop;
-        }
-
-        /// <summary>
-        /// Close the scene selector to ensure a seed that is likely to generate successfully.
-        /// </summary>
-        protected virtual void Close()
-        {
-            AddGrubScenes();
-            AddEssenceScenes();
-            AddHubs();
-            BalanceTransitions();
         }
 
         /// <summary>

@@ -31,17 +31,17 @@ transition - though it's not enforced that transitions added by door rando must 
 - Rooms containing tram stations are considered bench rooms; other questionable rooms (such as Distant Village Stag, Palace Grounds and Junk Pit) are not.
 - This setting has no effect in item rando (where all three White Palace bench rooms are adjacent!)
 
-### Remove Empty Rooms
-- Variant of Room Rando that removes all rooms without checks, except for rooms required for checks in other rooms.
-- This mode is only available in unmatched room rando.
-- A log is created in the Randomizer logs folder listing the rooms which were removed.
+### Restricted Room Rando
 
-### Limited Room Rando
-- Variant of Room Rando that removes many rooms at random.
-- The proportion of rooms that are left can be changed.
-- Locations will receive multiple items to compensate for the removed locations - the PreferMultiShiny setting in RandoPlus affects placements
-if limited room rando is enabled.
-- Will not be available if RandoPlus is not installed - RandoPlus does not need to be active for this setting to function, though.
-- A log is created in the Randomizer logs folder listing the rooms which were not removed.
+This is a modifier to room rando that causes the number of rooms in Hallownest to be reduced. The following two options are available:
+- Remove Empty Rooms: removes almost all rooms without a check
+- Limited Room Rando: removes (or sometimes adds, if Remove Empty Rooms is active) rooms to ensure that the proportion of rooms available is roughly the provided value.
 
-Both the Remove Empty Rooms and Limited Room Rando settings make the number of attempts required to generate the seed increase.
+Some notes:
+- The Black Egg Temple room will always be present.
+- These modes are only available if full room rando is enabled in Randomizer (the Coupled and Matched settings can be set to any options though).
+- The Limited Room Rando setting requires RandoPlus to be installed - none of the settings in RandoPlus need to be active though.
+- If any rooms with checks are removed, then the items will be distributed among the remaining locations (so there may be multiple checks per location).
+- The PreferMultiShiny setting in RandoPlus is respected.
+- With some combinations of settings (for example the default Randomizer pool settings) it may take the randomizer many attempts to generate the placements.
+- A log is created in the Randomizer logs folder listing which rooms are present.

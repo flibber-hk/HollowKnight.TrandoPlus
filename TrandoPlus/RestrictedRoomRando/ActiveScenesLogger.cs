@@ -26,7 +26,7 @@ namespace TrandoPlus.RestrictedRoomRando
                 sb.AppendLine($" - {scene}");
             }
             sb.AppendLine();
-            sb.AppendLine($"Total selected scenes: {selectedScenes.Count}/{RequestMaker.Selector.SceneCount}.");
+            sb.AppendLine($"Total selected scenes: {selectedScenes.Count}/{RequestMaker.Selector.TotalSceneCount}.");
             sb.AppendLine($"Total selected transitions: {RequestMaker.Selector.SelectedTransitionCount}/{RequestMaker.Selector.TransitionCount}.");
 
 
