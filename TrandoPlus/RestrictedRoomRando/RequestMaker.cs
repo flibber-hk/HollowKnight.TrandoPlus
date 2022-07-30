@@ -51,6 +51,8 @@ namespace TrandoPlus.RestrictedRoomRando
                 Selector.OnSceneSelectorRun.Subscribe(-10f, AddRoomsWithItems);
             }
 
+            // If remove empty rooms is disabled, then random rooms will have to be removing rather
+            // than adding rooms.
             bool arbitraryScenesRemoved = !RoomRemovalManager.Config.RemoveEmptyRooms;
             void RecordRemoved(string scene) => arbitraryScenesRemoved = true;
 
