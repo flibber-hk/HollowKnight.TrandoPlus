@@ -27,7 +27,7 @@ namespace TrandoPlus.RestrictedRoomRando
             {
                 return;
             }
-            if (!TrandoPlus.GS.AnySceneRemoval)
+            if (!RoomRemovalManager.Config.AnySceneRemoval)
             {
                 return;
             }
@@ -41,20 +41,20 @@ namespace TrandoPlus.RestrictedRoomRando
             {
                 return;
             }
-            if (!TrandoPlus.GS.AnySceneRemoval)
+            if (!RoomRemovalManager.Config.AnySceneRemoval)
             {
                 return;
             }
 
-            if (TrandoPlus.GS.RemoveEmptyRooms)
+            if (RoomRemovalManager.Config.RemoveEmptyRooms)
             {
                 Selector.OnSceneSelectorRun.Subscribe(-10f, AddRoomsWithItems);
             }
 
-            bool arbitraryScenesRemoved = !TrandoPlus.GS.RemoveEmptyRooms;
+            bool arbitraryScenesRemoved = !RoomRemovalManager.Config.RemoveEmptyRooms;
             void RecordRemoved(string scene) => arbitraryScenesRemoved = true;
 
-            if (TrandoPlus.GS.LimitedRoomRandoPlayable)
+            if (RoomRemovalManager.Config.RemoveRandomRooms)
             {
                 Selector.OnSceneSelectorRun.Subscribe(0f, (rb, ss) => ss.OnRemoveScene += RecordRemoved);
                 Selector.OnSceneSelectorRun.Subscribe(0f, AddLimitedRoomRandoScenes);
@@ -64,9 +64,12 @@ namespace TrandoPlus.RestrictedRoomRando
             Selector.Run();
             Selector.Apply(rb);
 
-            if (TrandoPlus.GS.LimitedRoomRandoPlayable && arbitraryScenesRemoved)
+            if (arbitraryScenesRemoved)
             {
-                ApplyPadders(rb);
+                if (Modding.ModHooks.GetMod("RandoPlus") is not null)
+                {
+                    ApplyPadders(rb);
+                }
             }
         }
 
@@ -94,15 +97,15 @@ namespace TrandoPlus.RestrictedRoomRando
 
         private static void AddLimitedRoomRandoScenes(RequestBuilder rb, SceneSelector sel)
         {
-            TrandoPlus.instance.Log($"{sel.SelectedSceneCount} - {sel.TotalSceneCount} - {TrandoPlus.GS.LimitedRoomRandoFraction * sel.TotalSceneCount + 5}");
+            TrandoPlus.instance.Log($"{sel.SelectedSceneCount} - {sel.TotalSceneCount} - {RoomRemovalManager.Config.RandomRoomsFraction * sel.TotalSceneCount + 5}");
 
-            while (sel.SelectedSceneCount < TrandoPlus.GS.LimitedRoomRandoFraction * sel.TotalSceneCount - 5)
+            while (sel.SelectedSceneCount < RoomRemovalManager.Config.RandomRoomsFraction * sel.TotalSceneCount - 5)
             {
                 List<string> availableScenes = sel.AvailableSceneNames.OrderBy(x => x).ToList();
                 sel.SelectScene(rb.rng.Next(availableScenes));
             }
 
-            while (sel.SelectedSceneCount > TrandoPlus.GS.LimitedRoomRandoFraction * sel.TotalSceneCount + 5)
+            while (sel.SelectedSceneCount > RoomRemovalManager.Config.RandomRoomsFraction * sel.TotalSceneCount + 5)
             {
                 List<string> selectedScenes = sel.SelectedSceneNames.OrderBy(x => x).ToList();
                 sel.RemoveScene(rb.rng.Next(selectedScenes));

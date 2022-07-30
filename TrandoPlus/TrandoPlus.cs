@@ -11,7 +11,15 @@ namespace TrandoPlus
         internal static TrandoPlus instance;
 
         public static GlobalSettings GS = new();
-        public void OnLoadGlobal(GlobalSettings s) => GS = s;
+        public void OnLoadGlobal(GlobalSettings s)
+        {
+            if (s.LimitedRoomRandoConfig == null)
+            {
+                s.LimitedRoomRandoConfig = new();
+            }
+
+            GS = s;
+        }
         public GlobalSettings OnSaveGlobal() => GS;
 
         public TrandoPlus() : base(null)

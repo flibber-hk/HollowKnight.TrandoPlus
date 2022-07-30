@@ -9,13 +9,18 @@ namespace TrandoPlus
         public bool RandomizeDrops = false;
         public bool ProhibitAdjacentBenches = false;
 
-        public bool RemoveEmptyRooms = false;
-        public bool LimitedRoomRando = false;
+        public LimitedRoomRandoConfig LimitedRoomRandoConfig = new();
+    }
 
-        [JsonIgnore] public bool AnySceneRemoval => RemoveEmptyRooms || LimitedRoomRandoPlayable;
-        [JsonIgnore] public bool LimitedRoomRandoPlayable => LimitedRoomRando && Modding.ModHooks.GetMod("RandoPlus") is not null;
-        
+    public class LimitedRoomRandoConfig
+    {
+        public bool RemoveEmptyRooms = false;
+        public bool RemoveRandomRooms = false;
+
+        [JsonIgnore] public bool AnySceneRemoval => RemoveEmptyRooms || RemoveRandomRooms;
+        [JsonIgnore] public bool RemoveRandomRoomsPlayable => RemoveRandomRooms && Modding.ModHooks.GetMod("RandoPlus") is not null;
+
         [MenuChanger.Attributes.MenuRange(0.2f, 0.7f)]
-        public float LimitedRoomRandoFraction = 0.4f;
+        public float RandomRoomsFraction = 0.4f;
     }
 }

@@ -1,14 +1,11 @@
 ﻿using RandomizerMod.RC;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TrandoPlus.RestrictedRoomRando
 {
     public static class RoomRemovalManager
     {
+        public static LimitedRoomRandoConfig Config => TrandoPlus.GS.LimitedRoomRandoConfig;
+
         public static void Hook()
         {
             RequestMaker.Hook();
@@ -18,7 +15,7 @@ namespace TrandoPlus.RestrictedRoomRando
 
         private static void BeforeGameStart(RandoController rc)
         {
-            if (TrandoPlus.GS.LimitedRoomRando && RandoPlus.RandoPlus.GS.PreferMultiShiny)
+            if (Config.RemoveRandomRooms && RandoPlus.RandoPlus.GS.PreferMultiShiny)
             {
                 RandoPlus.AreaRestriction.AreaRestriction.PreventMultiChests();
             }

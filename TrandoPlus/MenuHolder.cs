@@ -11,10 +11,15 @@ namespace TrandoPlus
     public class MenuHolder
     {
         internal MenuPage MainPage;
-        internal MenuElementFactory<GlobalSettings> doorMEF;
-        internal VerticalItemPanel doorVIP;
+        internal MenuElementFactory<GlobalSettings> tpMEF;
+        internal VerticalItemPanel tpVIP;
+        internal SmallButton JumpToTPPage;
 
-        internal SmallButton JumpToDRPage;
+        internal MenuPage lrrPage;
+        internal MenuElementFactory<LimitedRoomRandoConfig> lrrMEF;
+        internal VerticalItemPanel lrrVIP;
+        internal SmallButton JumpToLrrPage;
+
 
         private static MenuHolder _instance = null;
         internal static MenuHolder Instance => _instance ?? (_instance = new MenuHolder());
@@ -32,29 +37,26 @@ namespace TrandoPlus
 
         private bool HandleButton(MenuPage landingPage, out SmallButton button)
         {
-            JumpToDRPage = new(landingPage, Localize("TrandoPlus"));
-            JumpToDRPage.AddHideAndShowEvent(landingPage, MainPage);
-            button = JumpToDRPage;
+            JumpToTPPage = new(landingPage, Localize("TrandoPlus"));
+            JumpToTPPage.AddHideAndShowEvent(landingPage, MainPage);
+            button = JumpToTPPage;
             return true;
         }
 
         private void ConstructMenu(MenuPage landingPage)
         {
             MainPage = new MenuPage(Localize("TrandoPlus"), landingPage);
-            doorMEF = new(MainPage, TrandoPlus.GS);
+            lrrPage = new(Localize("Limited Room Rando"), MainPage);
+            lrrMEF = new(lrrPage, TrandoPlus.GS.LimitedRoomRandoConfig);
+            lrrVIP = new(lrrPage, new(0, 300), 75f, true, lrrMEF.Elements);
+            Localize(lrrMEF);
 
-            IValueElement[] elements = doorMEF.Elements;
+            JumpToLrrPage = new(MainPage, Localize("Limited Room Rando"));
+            JumpToLrrPage.AddHideAndShowEvent(MainPage, lrrPage);
 
-            if (Modding.ModHooks.GetMod("RandoPlus") is null)
-            {
-                elements = elements
-                    .Where(x => x != doorMEF.ElementLookup[nameof(GlobalSettings.LimitedRoomRando)])
-                    .Where(x => x != doorMEF.ElementLookup[nameof(GlobalSettings.LimitedRoomRandoFraction)])
-                    .ToArray();
-            }
-
-            doorVIP = new(MainPage, new(0, 300), 75f, true, elements);
-            Localize(doorMEF);
+            tpMEF = new(MainPage, TrandoPlus.GS);
+            tpVIP = new(MainPage, new(0, 300), 50f, true, tpMEF.Elements.Append<IMenuElement>(JumpToLrrPage).ToArray());
+            Localize(tpMEF);
         }
     }
 }
