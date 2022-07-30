@@ -46,16 +46,22 @@ namespace TrandoPlus
         private void ConstructMenu(MenuPage landingPage)
         {
             MainPage = new MenuPage(Localize("TrandoPlus"), landingPage);
-            lrrPage = new(Localize("Limited Room Rando"), MainPage);
-            lrrMEF = new(lrrPage, TrandoPlus.GS.LimitedRoomRandoConfig);
-            lrrVIP = new(lrrPage, new(0, 300), 75f, true, lrrMEF.Elements);
-            Localize(lrrMEF);
-
-            JumpToLrrPage = new(MainPage, Localize("Limited Room Rando"));
-            JumpToLrrPage.AddHideAndShowEvent(MainPage, lrrPage);
-
             tpMEF = new(MainPage, TrandoPlus.GS);
-            tpVIP = new(MainPage, new(0, 300), 50f, true, tpMEF.Elements.Append<IMenuElement>(JumpToLrrPage).ToArray());
+            IMenuElement[] elements = tpMEF.Elements;
+
+            if (Modding.ModHooks.GetMod("RandoPlus") is not null)
+            {
+                lrrPage = new(Localize("Limited Room Rando"), MainPage);
+                lrrMEF = new(lrrPage, TrandoPlus.GS.LimitedRoomRandoConfig);
+                lrrVIP = new(lrrPage, new(0, 300), 75f, true, lrrMEF.Elements);
+                Localize(lrrMEF);
+                JumpToLrrPage = new(MainPage, Localize("Limited Room Rando"));
+                JumpToLrrPage.AddHideAndShowEvent(MainPage, lrrPage);
+
+                elements = elements.Append(JumpToLrrPage).ToArray();
+            }
+            
+            tpVIP = new(MainPage, new(0, 300), 50f, true, elements);
             Localize(tpMEF);
         }
     }

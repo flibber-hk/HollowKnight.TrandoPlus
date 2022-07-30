@@ -66,10 +66,7 @@ namespace TrandoPlus.RestrictedRoomRando
 
             if (arbitraryScenesRemoved)
             {
-                if (Modding.ModHooks.GetMod("RandoPlus") is not null)
-                {
-                    ApplyPadders(rb);
-                }
+                ApplyPadders(rb);
             }
         }
 

@@ -31,17 +31,18 @@ transition - though it's not enforced that transitions added by door rando must 
 - Rooms containing tram stations are considered bench rooms; other questionable rooms (such as Distant Village Stag, Palace Grounds and Junk Pit) are not.
 - This setting has no effect in item rando (where all three White Palace bench rooms are adjacent!)
 
-### Restricted Room Rando
+### Limited Room Rando
 
 This is a modifier to room rando that causes the number of rooms in Hallownest to be reduced. The following two options are available:
-- Remove Empty Rooms: removes almost all rooms without a check
-- Limited Room Rando: removes (or sometimes adds, if Remove Empty Rooms is active) rooms to ensure that the proportion of rooms available is roughly the provided value.
+- Remove Empty Rooms: removes almost all rooms without a randomized location.
+- Remove Random Rooms: removes (or sometimes adds, if Remove Empty Rooms is active) rooms to ensure that the proportion of rooms available is roughly the provided value.
 
 Some notes:
 - The Black Egg Temple room will always be present.
-- These modes are only available if full room rando is enabled in Randomizer (the Coupled and Matched settings can be set to any options though).
-- The Limited Room Rando setting requires RandoPlus to be installed - none of the settings in RandoPlus need to be active though.
+- These settings are only applied if full room rando is enabled in Randomizer (the Coupled and Matched settings can be set to any options though).
+- RandoPlus must be installed for these options to appear - none of the settings in RandoPlus need to be active though.
 - If any rooms with checks are removed, then the items will be distributed among the remaining locations (so there may be multiple checks per location).
 - The PreferMultiShiny setting in RandoPlus is respected.
 - With some combinations of settings (for example the default Randomizer pool settings) it may take the randomizer many attempts to generate the placements.
 - A log is created in the Randomizer logs folder listing which rooms are present.
+- These settings are not compatible with certain vanilla pools (such as vanilla skills or keys).

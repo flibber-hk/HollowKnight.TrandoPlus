@@ -18,7 +18,6 @@ namespace TrandoPlus
         public bool RemoveRandomRooms = false;
 
         [JsonIgnore] public bool AnySceneRemoval => RemoveEmptyRooms || RemoveRandomRooms;
-        [JsonIgnore] public bool RemoveRandomRoomsPlayable => RemoveRandomRooms && Modding.ModHooks.GetMod("RandoPlus") is not null;
 
         [MenuChanger.Attributes.MenuRange(0.2f, 0.7f)]
         public float RandomRoomsFraction = 0.4f;
