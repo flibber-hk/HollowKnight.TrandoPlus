@@ -378,7 +378,7 @@ namespace TrandoPlus.RestrictedRoomRando
 
         /// <summary>
         /// Make sure there is enough reachable essence. Not necessary with default settings because
-        /// White Defender, Marmu, Failed Champion and 
+        /// White Defender, Marmu, Failed Champion and Soul Tyrant are available.
         /// </summary>
         private void AddEssenceScenes()
         {
