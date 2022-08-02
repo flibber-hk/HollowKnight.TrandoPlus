@@ -96,7 +96,8 @@ namespace TrandoPlus
             }
 
             benchRandoScenes = BenchRando.Rando.RandoInterop.LS.Benches
-                .Select(benchName => BenchRando.BRData.BenchLookup[benchName].SceneName)
+                .Select(benchName => BenchRando.BRData.BenchLookup[benchName])
+                .Select(bench => bench.GetRMLocationDef().SceneName)
                 .ToList();
             return true;
         }
