@@ -16,7 +16,7 @@ namespace TrandoPlus.RestrictedRoomRando
         {
             RequestBuilder.OnUpdate.Subscribe(200, InstantiateSceneSelector);
 
-            RequestBuilder.OnUpdate.Subscribe(250, SelectTransitions);
+            RequestBuilder.OnUpdate.Subscribe(250, SelectScenes);
         }
 
         // Instantiate scene selector early, so that people have the opportunity to add constraints and callbacks to it if necessary.
@@ -36,7 +36,7 @@ namespace TrandoPlus.RestrictedRoomRando
             Selector = new(rb);
         }
 
-        private static void SelectTransitions(RequestBuilder rb)
+        private static void SelectScenes(RequestBuilder rb)
         {
             if (rb.gs.TransitionSettings.Mode != RandomizerMod.Settings.TransitionSettings.TransitionMode.RoomRandomizer)
             {

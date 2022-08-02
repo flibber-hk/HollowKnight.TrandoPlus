@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using ConnectionMetadataInjector;
 using ItemChanger;
 using Modding;
 using RandomizerCore.Extensions;
@@ -42,9 +42,7 @@ namespace TrandoPlus.RestrictedRoomRando
             }
 
             // Remove locations
-            rb.RemoveLocationsWhere(l => !rb.TryGetLocationDef(l, out LocationDef def)
-                || def.SceneName == null
-                || !selector.SelectedSceneNames.Contains(def.SceneName));
+            rb.RemoveLocationsWhere(l => !CanAppear(l, rb, selector));
 
             // Remove stag items if their targets do not exist
             foreach ((string item, string scene) in SceneSelector.StagScenes)
@@ -59,6 +57,24 @@ namespace TrandoPlus.RestrictedRoomRando
             if (ModHooks.GetMod("BenchRando") is Mod) RemoveBenches(rb, selector.SelectedSceneNames);
             // Remove levers that unlock stags if necessary
             if (ModHooks.GetMod("Randomizable Levers") is Mod) RemoveLevers(rb, selector.SelectedSceneNames);
+        }
+
+        private static readonly MetadataProperty<AbstractLocation, IEnumerable<string>> SceneNamesProperty = new("SceneNames", _ => Enumerable.Empty<string>());
+
+        public static bool CanAppear(string loc, RequestBuilder rb, SceneSelector sel)
+        {
+            if (rb.TryGetLocationDef(loc, out LocationDef def) && !string.IsNullOrEmpty(def.SceneName))
+            {
+                return sel.SelectedSceneNames.Contains(def.SceneName);
+            }
+
+            AbstractLocation icLoc = Finder.GetLocation(loc);
+            if (icLoc != null)
+            {
+                return SupplementalMetadata.Of(icLoc).Get(SceneNamesProperty).Any(x => sel.SelectedSceneNames.Contains(x));
+            }
+
+            return false;
         }
 
         private static void RemoveBenches(RequestBuilder rb, HashSet<string> selectedScenes)
