@@ -36,6 +36,7 @@ transition - though it's not enforced that transitions added by door rando must 
 This is a modifier to room rando that causes the number of rooms in Hallownest to be reduced. The following two options are available:
 - Remove Empty Rooms: removes almost all rooms without a randomized location.
 - Remove Random Rooms: removes (or sometimes adds, if Remove Empty Rooms is active) rooms to ensure that the proportion of rooms available is roughly the provided value.
+- Ensure Bench Rooms: Prevents seeds where the proportion of rooms with benches is much lower than it would be in regular room rando.
 
 Some notes:
 - The Black Egg Temple room will always be present.

@@ -63,12 +63,31 @@ namespace TrandoPlus.RestrictedRoomRando
                 Selector.OnSceneSelectorRun.Subscribe(0f, (rb, ss) => ss.OnRemoveScene -= RecordRemoved);
             }
 
+            if (RoomRemovalManager.Config.EnsureBenchRooms)
+            {
+                Selector.OnSceneSelectorRun.Subscribe(100f, AddBenches);
+            }
+
             Selector.Run();
             Selector.Apply(rb);
 
             if (arbitraryScenesRemoved)
             {
                 ApplyPadders(rb);
+            }
+        }
+
+        private static void AddBenches(RequestBuilder rb, SceneSelector sel)
+        {
+            int selectedScenesCount = sel.SelectedSceneCount;
+            int totalScenes = sel.TotalSceneCount;
+
+            List<string> benchScenes = Utility.GetBenchScenes(rb);            
+            int totalBenchScenes = benchScenes.Count;
+
+            while (benchScenes.Where(scene => sel.SelectedSceneNames.Contains(scene)).Count() < totalBenchScenes * selectedScenesCount / totalScenes)
+            {
+                sel.SelectScene(rb.rng.Next(benchScenes.Where(scene => !sel.SelectedSceneNames.Contains(scene)).OrderBy(s => s).ToList()));
             }
         }
 

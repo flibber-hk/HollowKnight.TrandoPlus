@@ -16,6 +16,7 @@ namespace TrandoPlus
     {
         public bool RemoveEmptyRooms = false;
         public bool RemoveRandomRooms = false;
+        public bool EnsureBenchRooms = false;
 
         [JsonIgnore] public bool AnySceneRemoval => RemoveEmptyRooms || RemoveRandomRooms;
 
