@@ -4,6 +4,7 @@ using System.Linq;
 using RandomizerCore.Extensions;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
+using TrandoPlus.Utils;
 
 namespace TrandoPlus.RestrictedRoomRando
 {

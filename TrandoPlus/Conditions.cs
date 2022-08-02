@@ -6,6 +6,7 @@ using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
 using System.Collections.Generic;
 using System.Linq;
+using TrandoPlus.Utils;
 
 namespace TrandoPlus
 {

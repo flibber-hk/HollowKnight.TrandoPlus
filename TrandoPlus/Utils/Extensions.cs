@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrandoPlus
+namespace TrandoPlus.Utils
 {
-    internal static class Extensions
+    public static class Extensions
     {
         public static void Increment<T>(this Dictionary<T, int> dict, T key, int amount = 1)
         {

@@ -4,8 +4,11 @@ using ItemChanger;
 using Modding;
 using RandomizerMod.RC;
 
-namespace TrandoPlus
+namespace TrandoPlus.Utils
 {
+    /// <summary>
+    /// Class containing utility methods common to various parts of TrandoPlus.
+    /// </summary>
     public static class Utility
     {
         private static readonly HashSet<string> vanillaBenchScenes = new()

@@ -2,6 +2,7 @@
 using System.Linq;
 using Modding;
 using RandomizerMod.RandomizerData;
+using TrandoPlus.Utils;
 
 namespace TrandoPlus.RestrictedRoomRando
 {
