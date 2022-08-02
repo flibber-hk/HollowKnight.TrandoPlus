@@ -15,6 +15,19 @@ namespace TrandoPlus.RestrictedRoomRando
     {
         public static SceneSelector Selector { get; set; }
 
+        public static bool IsActive(RequestBuilder rb)
+        {
+            if (rb.gs.TransitionSettings.Mode != RandomizerMod.Settings.TransitionSettings.TransitionMode.RoomRandomizer)
+            {
+                return false;
+            }
+            if (!RoomRemovalManager.Config.AnySceneRemoval)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public static void Hook()
         {
             RequestBuilder.OnUpdate.Subscribe(200, InstantiateSceneSelector);
@@ -27,28 +40,14 @@ namespace TrandoPlus.RestrictedRoomRando
         {
             Selector = null;
 
-            if (rb.gs.TransitionSettings.Mode != RandomizerMod.Settings.TransitionSettings.TransitionMode.RoomRandomizer)
-            {
-                return;
-            }
-            if (!RoomRemovalManager.Config.AnySceneRemoval)
-            {
-                return;
-            }
+            if (!IsActive(rb)) return;
 
             Selector = new(rb);
         }
 
         private static void SelectScenes(RequestBuilder rb)
         {
-            if (rb.gs.TransitionSettings.Mode != RandomizerMod.Settings.TransitionSettings.TransitionMode.RoomRandomizer)
-            {
-                return;
-            }
-            if (!RoomRemovalManager.Config.AnySceneRemoval)
-            {
-                return;
-            }
+            if (!IsActive(rb)) return;
 
             if (RoomRemovalManager.Config.RemoveEmptyRooms)
             {

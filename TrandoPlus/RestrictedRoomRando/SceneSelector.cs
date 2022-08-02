@@ -347,6 +347,10 @@ namespace TrandoPlus.RestrictedRoomRando
                 toInvoke?.Invoke(rb, this);
             }
             Close();
+
+            // Add a log message to inform modlog readers that this is going on - is likely this will come up because
+            // it can take many attempts to generate the seed.
+            TrandoPlus.instance.Log($"SceneSelector closed: {SelectedSceneCount} scenes selected, {SelectedTransitionCount} transitions selected.");
         }
 
 
@@ -452,7 +456,7 @@ namespace TrandoPlus.RestrictedRoomRando
         /// This is not necessary in uncoupled mode.
         /// Explanation of the choice of ratio:
         /// - Need to have T >= 2R - 2 for connectivity (each edge encompasses two transitions)
-        /// - Transition count balancing needs to happen after adding hubs, so we increase to 2.1 to give some leeway.
+        /// - Transition count balancing needs to happen after adding hubs, so we increase to give some leeway.
         /// </summary>
         private void AddHubs()
         {
@@ -470,7 +474,7 @@ namespace TrandoPlus.RestrictedRoomRando
 
             OnSelectScene += Remove;
 
-            while (SelectedTransitionCount < 2.1f * SelectedSceneCount)
+            while (SelectedTransitionCount < 2.15f * SelectedSceneCount)
             {
                 // Spaghetti alert
                 if (availableHubScenes.Count == 0)
@@ -490,6 +494,11 @@ namespace TrandoPlus.RestrictedRoomRando
                             .Select(kvp => kvp.Key)
                             .OrderBy(scene => scene)
                             .ToList();
+
+                        if (availableHubScenes.Count == 0)
+                        {
+                            break;
+                        }
                     }
                 }
 
