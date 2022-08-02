@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ConnectionMetadataInjector;
 using ItemChanger;
+using ItemChanger.Extensions;
 using Modding;
 using RandomizerCore.Extensions;
 using RandomizerMod.RandomizerData;
@@ -59,7 +60,8 @@ namespace TrandoPlus.RestrictedRoomRando
             if (ModHooks.GetMod("Randomizable Levers") is Mod) RemoveLevers(rb, selector.SelectedSceneNames);
         }
 
-        private static readonly MetadataProperty<AbstractLocation, IEnumerable<string>> SceneNamesProperty = new("SceneNames", _ => Enumerable.Empty<string>());
+        private static readonly MetadataProperty<AbstractLocation, IEnumerable<string>> SceneNamesProperty = 
+            new("SceneNames", icLoc => icLoc.sceneName?.Yield() ?? Enumerable.Empty<string>());
 
         public static bool CanAppear(string loc, RequestBuilder rb, SceneSelector sel)
         {
