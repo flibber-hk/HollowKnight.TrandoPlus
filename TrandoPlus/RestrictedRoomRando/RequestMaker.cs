@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ConnectionMetadataInjector;
+using ItemChanger;
+using ItemChanger.Extensions;
 using RandomizerCore.Extensions;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
@@ -96,14 +99,54 @@ namespace TrandoPlus.RestrictedRoomRando
         {
             foreach (string locationName in rb.EnumerateItemGroups().SelectMany(gb => gb.Locations.EnumerateDistinct()))
             {
-                if (rb.TryGetLocationDef(locationName, out LocationDef def))
+                string scene = GetSceneForLocation(locationName, rb);
+                if (!string.IsNullOrEmpty(scene))
                 {
-                    if (!string.IsNullOrEmpty(def.SceneName))
-                    {
-                        sel.SelectScene(def.SceneName);
-                    }
+                    sel.SelectScene(scene);
                 }
             }
+        }
+
+        private static readonly MetadataProperty<AbstractLocation, IEnumerable<string>> SceneNamesProperty =
+            new("SceneNames", icLoc => icLoc.sceneName?.Yield() ?? Enumerable.Empty<string>());
+
+
+        /// <summary>
+        /// Return a scene containing the given location.
+        /// If a location is in multiple scenes, returns one chosen at random in a stable way;
+        /// it only depends on the location name and the seed, and does not advance the RequestBuilder's rng.
+        /// </summary>
+        private static string GetSceneForLocation(string locationName, RequestBuilder rb)
+        {
+            if (rb.TryGetLocationDef(locationName, out LocationDef def) && !string.IsNullOrEmpty(def.SceneName))
+            {
+                return def.SceneName;
+            }
+
+            AbstractLocation icLoc = Finder.GetLocation(locationName);
+            if (icLoc != null)
+            {
+                List<string> sceneNames = SupplementalMetadata.Of(icLoc).Get(SceneNamesProperty)
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .ToList();
+
+                if (sceneNames.Count == 0)
+                {
+                    return null;
+                }
+
+                int gen;
+                unchecked
+                {
+                    gen = 163 * rb.gs.Seed + locationName.GetStableHashCode();
+                }
+
+                Random rng = new(gen);
+                return rng.Next(sceneNames);
+            }
+
+            return null;
         }
 
         private static void ApplyPadders(RequestBuilder rb)
