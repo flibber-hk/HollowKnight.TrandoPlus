@@ -151,18 +151,13 @@ namespace TrandoPlus.RestrictedRoomRando
         {
             Dictionary<string, HashSet<string>> constraints = new();
 
-            foreach (RoomConstraint constraint in RoomConstraint.GetConstraints())
+            foreach ((string Source, string Target) in RoomConstraints.GetConstraints(rb))
             {
-                if (!constraint.Applies(rb))
+                if (!constraints.TryGetValue(Source, out HashSet<string> targets))
                 {
-                    continue;
+                    targets = constraints[Source] = new();
                 }
-
-                if (!constraints.TryGetValue(constraint.SourceScene, out HashSet<string> targets))
-                {
-                    targets = constraints[constraint.SourceScene] = new();
-                }
-                targets.Add(constraint.TargetScene);
+                targets.Add(Target);
             }
 
             return constraints;
