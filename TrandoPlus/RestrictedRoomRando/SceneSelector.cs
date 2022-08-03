@@ -462,51 +462,27 @@ namespace TrandoPlus.RestrictedRoomRando
         {
             if (!rb.gs.TransitionSettings.Coupled) return;
 
-            // We treat any room with 5+ transitions as a hub
-            List<string> availableHubScenes = TransitionsPerScene
-                .Where(kvp => !SelectedSceneNames.Contains(kvp.Key))
-                .Where(kvp => kvp.Value >= 5)
-                .Select(kvp => kvp.Key)
-                .OrderBy(scene => scene)
-                .ToList();
+            Queue<string> availableHubScenes = new();
 
-            void Remove(string scene) => availableHubScenes.Remove(scene);
-
-            OnSelectScene += Remove;
+            for (int i = 5; i >= 3; i--)
+            {
+                IEnumerable<string> newScenes = TransitionsPerScene
+                    .Where(kvp => !SelectedSceneNames.Contains(kvp.Key))
+                    .Where(kvp => kvp.Value >= 5)
+                    .Select(kvp => kvp.Key);
+                rb.rng.AppendRandomly(availableHubScenes, newScenes);
+            }
 
             while (SelectedTransitionCount < 2.15f * SelectedSceneCount)
             {
-                // Spaghetti alert
+                string selectedHub = availableHubScenes.Dequeue();
+                SelectScene(selectedHub);
+
                 if (availableHubScenes.Count == 0)
                 {
-                    availableHubScenes = TransitionsPerScene
-                        .Where(kvp => !SelectedSceneNames.Contains(kvp.Key))
-                        .Where(kvp => kvp.Value >= 4)
-                        .Select(kvp => kvp.Key)
-                        .OrderBy(scene => scene)
-                        .ToList();
-
-                    if (availableHubScenes.Count == 0)
-                    {
-                        availableHubScenes = TransitionsPerScene
-                            .Where(kvp => !SelectedSceneNames.Contains(kvp.Key))
-                            .Where(kvp => kvp.Value >= 3)
-                            .Select(kvp => kvp.Key)
-                            .OrderBy(scene => scene)
-                            .ToList();
-
-                        if (availableHubScenes.Count == 0)
-                        {
-                            break;
-                        }
-                    }
+                    break;
                 }
-
-                string selectedHub = rb.rng.Next(availableHubScenes);
-                SelectScene(selectedHub);
             }
-
-            OnSelectScene -= Remove;
         }
 
         /// <summary>

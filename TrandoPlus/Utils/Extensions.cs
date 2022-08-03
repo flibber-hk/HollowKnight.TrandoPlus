@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RandomizerCore.Extensions;
 
 namespace TrandoPlus.Utils
 {
@@ -17,9 +16,21 @@ namespace TrandoPlus.Utils
             dict[key] = value + amount;
         }
 
-        /// <summary>
-        /// Because unity doesn't Enumerable.ToHashSet
-        /// </summary>
+        
+        // Because unity doesn't Enumerable.ToHashSet
         public static HashSet<T> AsHashSet<T>(this IEnumerable<T> e) => new(e);
+
+        /// <summary>
+        /// Randomize the order of the elements of toAdd before enqueueing them.
+        /// </summary>
+        public static void AppendRandomly(this Random rng, Queue<string> current, IEnumerable<string> toAdd)
+        {
+            List<string> toAddOrdered = toAdd.OrderBy(s => s).ToList();
+            rng.PermuteInPlace(toAddOrdered);
+            foreach (string element in toAdd)
+            {
+                current.Enqueue(element);
+            }
+        }
     }
 }
