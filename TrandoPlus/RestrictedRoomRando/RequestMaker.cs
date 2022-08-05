@@ -114,12 +114,28 @@ namespace TrandoPlus.RestrictedRoomRando
         /// Return a scene containing the given location.
         /// If a location is in multiple scenes, returns one chosen at random in a stable way;
         /// it only depends on the location name and the seed, and does not advance the RequestBuilder's rng.
+        /// For journal entry locations - we ensure that we return the least likely scene to be present
+        /// for non-respawning enemies (Hornet, Baldur and Kingsmould) and ensure that the entry and note locations
+        /// choose the same scene.
         /// </summary>
         private static string GetSceneForLocation(string locationName, RequestBuilder rb)
         {
             if (rb.TryGetLocationDef(locationName, out LocationDef def) && !string.IsNullOrEmpty(def.SceneName))
             {
                 return def.SceneName;
+            }
+
+            switch (locationName)
+            {
+                case "Journal_Entry-Hornet":
+                case "Hunter's_Notes-Hornet":
+                    return SceneNames.Deepnest_East_Hornet;
+                case "Journal_Entry-Elder_Baldur":
+                case "Hunter's_Notes-Elder_Baldur":
+                    return SceneNames.Crossroads_11_alt;
+                case "Journal_Entry-Kingsmould":
+                case "Hunter's_Notes-Kingsmould":
+                    return SceneNames.White_Palace_02;
             }
 
             AbstractLocation icLoc = Finder.GetLocation(locationName);
@@ -135,10 +151,16 @@ namespace TrandoPlus.RestrictedRoomRando
                     return null;
                 }
 
+                string seedName = locationName;
+                if (seedName.StartsWith("Hunter's_Notes"))
+                {
+                    seedName = "Journal_Entry" + seedName.Substring("Hunter's_Notes".Length);
+                }
+
                 int gen;
                 unchecked
                 {
-                    gen = 163 * rb.gs.Seed + locationName.GetStableHashCode();
+                    gen = 163 * rb.gs.Seed + seedName.GetStableHashCode();
                 }
 
                 Random rng = new(gen);

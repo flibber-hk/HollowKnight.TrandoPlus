@@ -71,6 +71,28 @@ namespace TrandoPlus.RestrictedRoomRando
             }
 
             AbstractLocation icLoc = Finder.GetLocation(loc);
+
+            
+            switch (loc)
+            {
+                // For these enemies, their note location requires colo access
+                case "Hunter's_Notes-Gruz_Mother":
+                case "Hunter's_Notes-Vengefly_King":
+                    return sel.SelectedSceneNames.Contains(SceneNames.Room_Colosseum_01);
+                // For these non-respawning enemies, if any of their scenes is missing we will
+                // derandomize the hunter's note location.
+                case "Hunter's_Notes-Hornet":
+                case "Hunter's_Notes-Elder_Baldur":
+                case "Hunter's_Notes-Kingsmould":
+                case "Hunter's_Notes-Crystal_Guardian":
+                case "Hunter's_Notes-Bluggsac":
+                    if (SupplementalMetadata.Of(icLoc).Get(SceneNamesProperty).Any(x => !sel.SelectedSceneNames.Contains(x)))
+                    {
+                        return false;
+                    }
+                    break;
+            }
+
             if (icLoc != null)
             {
                 return SupplementalMetadata.Of(icLoc).Get(SceneNamesProperty).Any(x => sel.SelectedSceneNames.Contains(x));
