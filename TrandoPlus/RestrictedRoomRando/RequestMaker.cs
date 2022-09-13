@@ -85,7 +85,7 @@ namespace TrandoPlus.RestrictedRoomRando
             int selectedScenesCount = sel.SelectedSceneCount;
             int totalScenes = sel.TotalSceneCount;
 
-            List<string> benchScenes = Utility.GetBenchScenes(rb);            
+            List<string> benchScenes = Utility.GetBenchScenes(rb).Where(scene => sel.AllSceneNames.Contains(scene)).ToList();            
             int totalBenchScenes = benchScenes.Count;
 
             while (benchScenes.Where(scene => sel.SelectedSceneNames.Contains(scene)).Count() < totalBenchScenes * selectedScenesCount / totalScenes)
@@ -180,8 +180,6 @@ namespace TrandoPlus.RestrictedRoomRando
 
         private static void AddLimitedRoomRandoScenes(RequestBuilder rb, SceneSelector sel)
         {
-            TrandoPlus.instance.Log($"{sel.SelectedSceneCount} - {sel.TotalSceneCount} - {RoomRemovalManager.Config.RandomRoomsFraction * sel.TotalSceneCount + 5}");
-
             while (sel.SelectedSceneCount < RoomRemovalManager.Config.RandomRoomsFraction * sel.TotalSceneCount - 5)
             {
                 List<string> availableScenes = sel.AvailableSceneNames.OrderBy(x => x).ToList();
