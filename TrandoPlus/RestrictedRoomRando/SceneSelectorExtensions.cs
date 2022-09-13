@@ -57,7 +57,7 @@ namespace TrandoPlus.RestrictedRoomRando
             // Remove bench items if their targets do not exist
             if (ModHooks.GetMod("BenchRando") is Mod) RemoveBenches(rb, selector.SelectedSceneNames);
             // Remove levers that unlock stags if necessary
-            if (ModHooks.GetMod("Randomizable Levers") is Mod) RemoveLevers(rb, selector.SelectedSceneNames);
+            if (ModHooks.GetMod("RandomizableLevers") is Mod) RemoveLevers(rb, selector.SelectedSceneNames);
         }
 
         private static readonly MetadataProperty<AbstractLocation, IEnumerable<string>> SceneNamesProperty = 
