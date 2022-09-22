@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Modding;
+using Newtonsoft.Json;
 
 namespace TrandoPlus
 {
@@ -10,6 +11,25 @@ namespace TrandoPlus
         public bool ProhibitAdjacentBenches = false;
 
         public LimitedRoomRandoConfig LimitedRoomRandoConfig = new();
+
+        public bool IsEnabled()
+        {
+            if (RandomizeDoors
+                || AreaDoorNonInteraction
+                || RandomizeDrops
+                || ProhibitAdjacentBenches
+                )
+            {
+                return true;
+            }
+
+            if (ModHooks.GetMod("RandoPlus") is not null && LimitedRoomRandoConfig.AnySceneRemoval)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public class LimitedRoomRandoConfig

@@ -5,6 +5,7 @@ using MenuChanger.MenuPanels;
 using MenuChanger.Extensions;
 using RandomizerMod.Menu;
 using static RandomizerMod.Localization;
+using BenchRando.Rando;
 
 namespace TrandoPlus
 {
@@ -39,14 +40,34 @@ namespace TrandoPlus
         {
             JumpToTPPage = new(landingPage, Localize("TrandoPlus"));
             JumpToTPPage.AddHideAndShowEvent(landingPage, MainPage);
+            UpdateSmallButtonColours();
+
             button = JumpToTPPage;
             return true;
         }
+
+        private void UpdateSmallButtonColours()
+        {
+            if (JumpToTPPage != null)
+            {
+                JumpToTPPage.Text.color = TrandoPlus.GS.IsEnabled() ? Colors.TRUE_COLOR : Colors.DEFAULT_COLOR;
+            }
+            if (JumpToLrrPage != null)
+            {
+                JumpToLrrPage.Text.color = TrandoPlus.GS.LimitedRoomRandoConfig.AnySceneRemoval ? Colors.TRUE_COLOR : Colors.DEFAULT_COLOR;
+            }
+        }
+
 
         private void ConstructMenu(MenuPage landingPage)
         {
             MainPage = new MenuPage(Localize("TrandoPlus"), landingPage);
             tpMEF = new(MainPage, TrandoPlus.GS);
+            foreach (IValueElement e in tpMEF.Elements)
+            {
+                e.SelfChanged += obj => UpdateSmallButtonColours();
+            }
+
             IMenuElement[] elements = tpMEF.Elements;
 
             if (Modding.ModHooks.GetMod("RandoPlus") is not null)
@@ -58,9 +79,16 @@ namespace TrandoPlus
                 JumpToLrrPage = new(MainPage, Localize("Limited Room Rando"));
                 JumpToLrrPage.AddHideAndShowEvent(MainPage, lrrPage);
 
+                foreach (IValueElement e in lrrMEF.Elements)
+                {
+                    e.SelfChanged += obj => UpdateSmallButtonColours();
+                }
+
                 elements = elements.Append(JumpToLrrPage).ToArray();
             }
             
+            UpdateSmallButtonColours();
+
             tpVIP = new(MainPage, new(0, 300), 50f, true, elements);
             Localize(tpMEF);
         }
