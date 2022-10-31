@@ -5,7 +5,6 @@ using MenuChanger.MenuPanels;
 using MenuChanger.Extensions;
 using RandomizerMod.Menu;
 using static RandomizerMod.Localization;
-using BenchRando.Rando;
 
 namespace TrandoPlus
 {
@@ -91,6 +90,14 @@ namespace TrandoPlus
 
             tpVIP = new(MainPage, new(0, 300), 50f, true, elements);
             Localize(tpMEF);
+        }
+
+        private void ResetMenu()
+        {
+            tpMEF.SetMenuValues(TrandoPlus.GS);
+            lrrMEF?.SetMenuValues(TrandoPlus.GS.LimitedRoomRandoConfig);
+
+            UpdateSmallButtonColours();
         }
     }
 }
