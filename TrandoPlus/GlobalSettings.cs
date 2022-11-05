@@ -23,7 +23,7 @@ namespace TrandoPlus
                 return true;
             }
 
-            if (ModHooks.GetMod("RandoPlus") is not null && LimitedRoomRandoConfig.AnySceneRemoval)
+            if (LimitedRoomRandoConfig.AnySceneRemoval)
             {
                 return true;
             }

@@ -47,14 +47,8 @@ namespace TrandoPlus
 
         private void UpdateSmallButtonColours()
         {
-            if (JumpToTPPage != null)
-            {
-                JumpToTPPage.Text.color = TrandoPlus.GS.IsEnabled() ? Colors.TRUE_COLOR : Colors.DEFAULT_COLOR;
-            }
-            if (JumpToLrrPage != null)
-            {
-                JumpToLrrPage.Text.color = TrandoPlus.GS.LimitedRoomRandoConfig.AnySceneRemoval ? Colors.TRUE_COLOR : Colors.DEFAULT_COLOR;
-            }
+            JumpToTPPage.Text.color = TrandoPlus.GS.IsEnabled() ? Colors.TRUE_COLOR : Colors.DEFAULT_COLOR;
+            JumpToLrrPage.Text.color = TrandoPlus.GS.LimitedRoomRandoConfig.AnySceneRemoval ? Colors.TRUE_COLOR : Colors.DEFAULT_COLOR;
         }
 
 
@@ -69,7 +63,7 @@ namespace TrandoPlus
 
             IMenuElement[] elements = tpMEF.Elements;
 
-            if (Modding.ModHooks.GetMod("RandoPlus") is not null)
+            // Create submenu for LRR, regardless of whether 
             {
                 lrrPage = new(Localize("Limited Room Rando"), MainPage);
                 lrrMEF = new(lrrPage, TrandoPlus.GS.LimitedRoomRandoConfig);
@@ -92,10 +86,10 @@ namespace TrandoPlus
             Localize(tpMEF);
         }
 
-        private void ResetMenu()
+        internal void ResetMenu()
         {
             tpMEF.SetMenuValues(TrandoPlus.GS);
-            lrrMEF?.SetMenuValues(TrandoPlus.GS.LimitedRoomRandoConfig);
+            lrrMEF.SetMenuValues(TrandoPlus.GS.LimitedRoomRandoConfig);
 
             UpdateSmallButtonColours();
         }

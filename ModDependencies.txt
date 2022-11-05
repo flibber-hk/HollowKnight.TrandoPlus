@@ -6,3 +6,4 @@ BenchRando
 RandoPlus
 Randomizable Levers
 ConnectionMetadataInjector
+RandoSettingsManager
