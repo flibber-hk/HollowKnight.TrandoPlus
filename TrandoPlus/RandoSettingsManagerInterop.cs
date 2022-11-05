@@ -21,8 +21,7 @@ namespace TrandoPlus
 
         public override void ReceiveSettings(GlobalSettings settings)
         {
-            TrandoPlus.GS = settings;
-            MenuHolder.Instance.ResetMenu();
+            MenuHolder.Instance.LoadFrom(settings ?? new());
         }
 
         public override bool TryProvideSettings(out GlobalSettings settings)
