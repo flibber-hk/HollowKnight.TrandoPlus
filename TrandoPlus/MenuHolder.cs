@@ -20,28 +20,22 @@ namespace TrandoPlus
         internal VerticalItemPanel lrrVIP;
         internal SmallButton JumpToLrrPage;
 
-
-        private static MenuHolder _instance = null;
-        internal static MenuHolder Instance => _instance ?? (_instance = new MenuHolder());
+        internal static MenuHolder Instance { get; private set; }
 
         public static void OnExitMenu()
         {
-            _instance = null;
+            Instance = null;
         }
 
         public static void Hook()
         {
-            RandomizerMenuAPI.AddMenuPage(Instance.ConstructMenu, Instance.HandleButton);
+            RandomizerMenuAPI.AddMenuPage(ConstructMenu, HandleButton);
             MenuChangerMod.OnExitMainMenu += OnExitMenu;
         }
 
-        private bool HandleButton(MenuPage landingPage, out SmallButton button)
+        private static bool HandleButton(MenuPage landingPage, out SmallButton button)
         {
-            JumpToTPPage = new(landingPage, Localize("TrandoPlus"));
-            JumpToTPPage.AddHideAndShowEvent(landingPage, MainPage);
-            UpdateSmallButtonColours();
-
-            button = JumpToTPPage;
+            button = Instance.JumpToTPPage;
             return true;
         }
 
@@ -58,7 +52,9 @@ namespace TrandoPlus
         }
 
 
-        private void ConstructMenu(MenuPage landingPage)
+        private static void ConstructMenu(MenuPage landingPage) => Instance = new(landingPage);
+
+        private MenuHolder(MenuPage landingPage)
         {
             MainPage = new MenuPage(Localize("TrandoPlus"), landingPage);
             tpMEF = new(MainPage, TrandoPlus.GS);
@@ -90,6 +86,10 @@ namespace TrandoPlus
 
             tpVIP = new(MainPage, new(0, 300), 50f, true, elements);
             Localize(tpMEF);
+
+            JumpToTPPage = new(landingPage, Localize("TrandoPlus"));
+            JumpToTPPage.AddHideAndShowEvent(landingPage, MainPage);
+            UpdateSmallButtonColours();
         }
 
         internal void LoadFrom(GlobalSettings gs)
