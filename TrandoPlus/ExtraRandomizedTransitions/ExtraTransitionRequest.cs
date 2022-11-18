@@ -70,6 +70,10 @@ namespace TrandoPlus.ExtraRandomizedTransitions
 
             oneWayGroup.Sources.AddRange(oneWayInTrans);
             oneWayGroup.Targets.AddRange(oneWayOutTrans);
+            foreach (string oneWay in oneWayAll)
+            {
+                rb.RemoveFromVanilla(oneWay);
+            }
 
             rb.OnGetGroupFor.Subscribe(-999f, MatchedTryResolveDropGroup);
 
