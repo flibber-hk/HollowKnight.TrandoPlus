@@ -1,9 +1,13 @@
-﻿using RandomizerCore.Randomization;
+﻿using RandomizerCore;
+using RandomizerCore.Randomization;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
+using RandomizerMod.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using TrandoPlus.Utils;
@@ -94,8 +98,112 @@ namespace TrandoPlus.ExtraRandomizedTransitions
 
             newRandomizedTransitions = newRandomizedTransitions.Where(x => !oneWayAll.Contains(x.Name)).ToList();
 
-            // TODO - assign to groups
+            if (rb.gs.TransitionSettings.TransitionMatching == RandomizerMod.Settings.TransitionSettings.TransitionMatchingSetting.NonmatchingDirections)
+            {
+                SelfDualTransitionGroupBuilder twoWayGroup;
+                if (sb.TryGetGroup(RBConsts.TwoWayGroup, out GroupBuilder twoWayGroup_prefab))
+                {
+                    twoWayGroup = (SelfDualTransitionGroupBuilder)twoWayGroup_prefab;
+                }
+                else
+                {
+                    twoWayGroup = new()
+                    {
+                        label = RBConsts.TwoWayGroup,
+                        stageLabel = RBConsts.MainTransitionStage,
+                        coupled = rb.gs.TransitionSettings.Coupled,
+                        strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy()
+                    };
+                    sb.Add(twoWayGroup);
+                }
 
+                HashSet<string> twoWayTransitions = new(newRandomizedTransitions.Select(x => x.Name));
+
+                twoWayGroup.Transitions.AddRange(twoWayTransitions);
+                foreach (string trans in twoWayTransitions)
+                {
+                    rb.RemoveFromVanilla(trans);
+                }
+
+                rb.OnGetGroupFor.Subscribe(-999f, MatchedTryResolveTwoWayGroup);
+
+                bool MatchedTryResolveTwoWayGroup(RequestBuilder rb, string item, RequestBuilder.ElementType type, out GroupBuilder gb)
+                {
+                    if (type == RequestBuilder.ElementType.Transition)
+                    {
+                        if (twoWayTransitions.Contains(item))
+                        {
+                            gb = twoWayGroup;
+                            return true;
+                        }
+                    }
+                    gb = default;
+                    return false;
+                }
+            }
+            else
+            {
+                SymmetricTransitionGroupBuilder horizontalGroup;
+                SymmetricTransitionGroupBuilder verticalGroup;
+
+                if (sb.TryGetGroup(RBConsts.InLeftOutRightGroup, out GroupBuilder horizontalGroup_prefab))
+                {
+                    horizontalGroup = (SymmetricTransitionGroupBuilder)horizontalGroup_prefab;
+                }
+                else
+                {
+                    horizontalGroup = new()
+                    {
+                        label = RBConsts.InLeftOutRightGroup,
+                        reverseLabel = RBConsts.InRightOutLeftGroup,
+                        coupled = rb.gs.TransitionSettings.Coupled,
+                        stageLabel = RBConsts.MainTransitionStage,
+                        strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy()
+                    };
+
+                    sb.Add(horizontalGroup);
+
+                    if (rb.gs.TransitionSettings.TransitionMatching == TransitionSettings.TransitionMatchingSetting.MatchingDirectionsAndNoDoorToDoor)
+                    {
+                        bool NotDoorToDoor(IRandoItem item, IRandoLocation location)
+                        {
+                            if (!rb.TryGetTransitionDef(item.Name, out TransitionDef t1)
+                                || !rb.TryGetTransitionDef(location.Name, out TransitionDef t2))
+                            {
+                                return true;
+                            }
+
+                            return t1.Direction != TransitionDirection.Door || t2.Direction != TransitionDirection.Door;
+                        }
+                        ((DefaultGroupPlacementStrategy)horizontalGroup.strategy).Constraints += NotDoorToDoor;
+                    }
+                }
+
+                if (sb.TryGetGroup(RBConsts.InTopOutBotGroup, out GroupBuilder verticalGroup_prefab))
+                {
+                    verticalGroup = (SymmetricTransitionGroupBuilder)verticalGroup_prefab;
+                }
+                else
+                {
+                    verticalGroup = new()
+                    {
+                        label = RBConsts.InTopOutBotGroup,
+                        reverseLabel = RBConsts.InBotOutTopGroup,
+                        coupled = rb.gs.TransitionSettings.Coupled,
+                        stageLabel = RBConsts.MainTransitionStage,
+                        strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy()
+                    };
+
+                    sb.Add(verticalGroup);
+                }
+
+            }
+
+            // Add transitions
+            // Remove from vanilla
+            // Handle bretta/non-door matching
+            // Group resolver
+            // Start location shenaniganry
             throw new NotImplementedException();
         }
 
