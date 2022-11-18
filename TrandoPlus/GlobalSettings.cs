@@ -6,8 +6,9 @@ namespace TrandoPlus
     public class GlobalSettings
     {
         public bool RandomizeDoors = false;
-        public bool AreaDoorNonInteraction = false;
+        public bool RandomizeDeadEnds = false;
         public bool RandomizeDrops = false;
+        public bool EnforceTransitionGrouping = false;
         public bool ProhibitAdjacentBenches = false;
 
         public LimitedRoomRandoConfig LimitedRoomRandoConfig = new();
@@ -15,7 +16,8 @@ namespace TrandoPlus
         public bool IsEnabled()
         {
             if (RandomizeDoors
-                || AreaDoorNonInteraction
+                || RandomizeDeadEnds
+                || EnforceTransitionGrouping
                 || RandomizeDrops
                 || ProhibitAdjacentBenches
                 )

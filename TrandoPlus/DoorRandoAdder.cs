@@ -26,7 +26,7 @@ namespace TrandoPlus
         private static void ApplyAreaDoorConstraint(RequestBuilder rb)
         {
             if (!TrandoPlus.GS.RandomizeDoors) return;
-            if (!TrandoPlus.GS.AreaDoorNonInteraction) return;
+            if (!TrandoPlus.GS.EnforceTransitionGrouping) return;
             
             foreach (GroupBuilder gb in rb.EnumerateTransitionGroups())
             {
