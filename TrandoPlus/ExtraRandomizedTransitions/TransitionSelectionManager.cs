@@ -1,25 +1,51 @@
-﻿using RandomizerMod.RandomizerData;
+﻿using RandomizerCore;
+using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TrandoPlus.Utils;
 
 namespace TrandoPlus.ExtraRandomizedTransitions
 {
     public class TransitionSelectionManager
     {
-        public List<TransitionSelector> Selectors = new()
+        private List<TransitionSelector> selectors = new()
         {
             new DoorRandoTransitionSelector(),
             new DropRandoTransitionSelector(),
             new DeadEndRandoTransitionSelector(),
         };
 
+        private IEnumerable<TransitionSelector> Selectors => selectors.Where(x => x.IsEnabled());
+
         // Used for the constraint
         private List<HashSet<string>> GroupedRandomizedTransitions = new();
+        private HashSet<string> AllTransitions => GroupedRandomizedTransitions.SelectMany(x => x).AsHashSet();
+
+        /// <summary>
+        /// Constraint to be added to the transition groups.
+        /// 
+        /// Explanation: This will only return false if item and loc are both transitions that have
+        /// been randomized, but not in the same collection.
+        /// </summary>
+        public bool TransitionGroupConstraint(IRandoItem item, IRandoLocation loc)
+        {
+            foreach (HashSet<string> group in GroupedRandomizedTransitions)
+            {
+                if (group.Contains(item.Name) && group.Contains(loc.Name))
+                {
+                    return true;
+                }
+            }
+
+            HashSet<string> allTransitions = AllTransitions;
+            if (!allTransitions.Contains(item.Name) || !allTransitions.Contains(loc.Name))
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         public static void CollectTransitions(RequestBuilder rb, out List<TransitionDef> vanilla, out List<TransitionDef> alreadyRandomized)
         {
@@ -80,7 +106,6 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 }
             }
         }
-
 
         public List<TransitionDef> GetNewRandomizedTransitions(RequestBuilder rb)
         {

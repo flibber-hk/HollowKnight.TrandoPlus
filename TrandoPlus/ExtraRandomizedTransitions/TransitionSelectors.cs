@@ -17,7 +17,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         /// <summary>
         /// Whether this selector should be run
         /// </summary>
-        public abstract bool Enabled();
+        public abstract bool IsEnabled();
     }
 
     public class DoorRandoTransitionSelector : TransitionSelector
@@ -37,7 +37,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             return result;
         }
 
-        public override bool Enabled() => TrandoPlus.GS.RandomizeDoors;
+        public override bool IsEnabled() => TrandoPlus.GS.RandomizeDoors;
     }
 
     public class DropRandoTransitionSelector : TransitionSelector
@@ -57,7 +57,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             return result;
         }
 
-        public override bool Enabled() => TrandoPlus.GS.RandomizeDrops;
+        public override bool IsEnabled() => TrandoPlus.GS.RandomizeDrops;
     }
 
     public class DeadEndRandoTransitionSelector : TransitionSelector
@@ -89,7 +89,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             return result;
         }
 
-        public override bool Enabled() => TrandoPlus.GS.RandomizeDeadEnds;
+        public override bool IsEnabled() => TrandoPlus.GS.RandomizeDeadEnds;
 
         /// <summary>
         /// Scene name for the transition, except returns a distinct scene name for rooms like
