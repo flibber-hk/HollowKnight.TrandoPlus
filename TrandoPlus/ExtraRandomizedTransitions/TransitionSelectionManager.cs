@@ -121,7 +121,10 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 HashSet<TransitionDef> allSelectedTransitions = new(selectedTransitions);
                 foreach (TransitionDef def in selectedTransitions)
                 {
-                    if (rb.TryGetTransitionDef(def.VanillaTarget, out TransitionDef target))
+                    TrandoPlus.instance.Log(def);
+                    // def.VanillaTarget is null if it's a OneWayOut transition - hope that in this case, the
+                    // selector has selected the source transition
+                    if (def.VanillaTarget != null && rb.TryGetTransitionDef(def.VanillaTarget, out TransitionDef target))
                     {
                         allSelectedTransitions.Add(target);
                     }
