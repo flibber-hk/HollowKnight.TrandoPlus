@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using RandomizerCore;
+using RandomizerCore.Extensions;
 using RandomizerCore.Randomization;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection.Emit;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using TrandoPlus.Utils;
@@ -183,16 +185,43 @@ namespace TrandoPlus.ExtraRandomizedTransitions
 
                 AddGroupResolver(rb, -999f, upDownTransitions.Select(x => x.Name).AsHashSet(), verticalGroup);
 
+                List<string> lefts = leftRightDoorTransitions.Where(d => d.Direction == TransitionDirection.Left).Select(x => x.Name).OrderBy(x => x).ToList();
+                List<string> rights = leftRightDoorTransitions.Where(d => d.Direction == TransitionDirection.Right).Select(x => x.Name).OrderBy(x => x).ToList();
+                List<string> doors = leftRightDoorTransitions.Where(d => d.Direction == TransitionDirection.Door).Select(x => x.Name).OrderBy(x => x).ToList();
 
-                // Add left/right transitions
+                rb.rng.PermuteInPlace(lefts);
+                rb.rng.PermuteInPlace(rights);
+                rb.rng.PermuteInPlace(doors);
+
+                if (doors.Count > lefts.Count && !horizontalGroup.Group1.EnumerateDistinct().Any())
+                {
+                    // Has to be door rando; the unique door-right transition (bretta) has been randomized and no left-right transitions have been
+                    foreach (string s in rights)
+                    {
+                        if (doors.Count < lefts.Count) doors.Add(s);
+                        else lefts.Add(s);
+                    }
+
+                    horizontalGroup.Group1.AddRange(doors);
+                    horizontalGroup.Group2.AddRange(lefts);
+                }
+                else
+                {
+                    foreach (string s in doors)
+                    {
+                        if (lefts.Count < rights.Count) lefts.Add(s);
+                        else rights.Add(s);
+                    }
+
+                    horizontalGroup.Group1.AddRange(rights);
+                    horizontalGroup.Group2.AddRange(lefts);
+                }
+
                 AddGroupResolver(rb, -999f, leftRightDoorTransitions.Select(x => x.Name).AsHashSet(), horizontalGroup);
-
-                // Handle bretta/non-door matching
-                // Start location shenaniganry
             }
-
-            throw new NotImplementedException();
         }
+
+        // TODO - Start location shenaniganry
 
         private static void ApplyConstraint(RequestBuilder rb)
         {
