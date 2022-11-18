@@ -38,8 +38,9 @@ namespace TrandoPlus
             bool rando = ModHooks.GetMod("Randomizer 4") is Mod;
 
             if (rando) MenuHolder.Hook();
-            if (rando) DoorRandoAdder.Hook();
-            if (rando) DropRandoAdder.Hook();
+            // if (rando) DoorRandoAdder.Hook();
+            // if (rando) DropRandoAdder.Hook();
+            if (rando) ExtraRandomizedTransitions.ExtraTransitionRequest.Hook();
             if (rando) ConditionManager.Hook();
             if (rando) RestrictedRoomRando.RoomRemovalManager.Hook();
 
