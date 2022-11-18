@@ -1,4 +1,5 @@
-﻿using RandomizerCore;
+﻿using JetBrains.Annotations;
+using RandomizerCore;
 using RandomizerCore.Randomization;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
@@ -49,6 +50,10 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             }
 
             List<TransitionDef> newRandomizedTransitions = manager.GetNewRandomizedTransitions(rb);
+            foreach (TransitionDef tDef in newRandomizedTransitions)
+            {
+                rb.RemoveFromVanilla(tDef.Name);
+            }
 
             #region Drops
             TransitionGroupBuilder oneWayGroup;
@@ -74,26 +79,8 @@ namespace TrandoPlus.ExtraRandomizedTransitions
 
             oneWayGroup.Sources.AddRange(oneWayInTrans);
             oneWayGroup.Targets.AddRange(oneWayOutTrans);
-            foreach (string oneWay in oneWayAll)
-            {
-                rb.RemoveFromVanilla(oneWay);
-            }
 
-            rb.OnGetGroupFor.Subscribe(-999f, MatchedTryResolveDropGroup);
-
-            bool MatchedTryResolveDropGroup(RequestBuilder rb, string item, RequestBuilder.ElementType type, out GroupBuilder gb)
-            {
-                if (type == RequestBuilder.ElementType.Transition)
-                {
-                    if (oneWayAll.Contains(item))
-                    {
-                        gb = oneWayGroup;
-                        return true;
-                    }
-                }
-                gb = default;
-                return false;
-            }
+            AddGroupResolver(rb, -999f, new(oneWayAll), oneWayGroup);
             #endregion
 
             newRandomizedTransitions = newRandomizedTransitions.Where(x => !oneWayAll.Contains(x.Name)).ToList();
@@ -118,28 +105,8 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 }
 
                 HashSet<string> twoWayTransitions = new(newRandomizedTransitions.Select(x => x.Name));
-
                 twoWayGroup.Transitions.AddRange(twoWayTransitions);
-                foreach (string trans in twoWayTransitions)
-                {
-                    rb.RemoveFromVanilla(trans);
-                }
-
-                rb.OnGetGroupFor.Subscribe(-999f, MatchedTryResolveTwoWayGroup);
-
-                bool MatchedTryResolveTwoWayGroup(RequestBuilder rb, string item, RequestBuilder.ElementType type, out GroupBuilder gb)
-                {
-                    if (type == RequestBuilder.ElementType.Transition)
-                    {
-                        if (twoWayTransitions.Contains(item))
-                        {
-                            gb = twoWayGroup;
-                            return true;
-                        }
-                    }
-                    gb = default;
-                    return false;
-                }
+                AddGroupResolver(rb, -999f, new(twoWayTransitions), twoWayGroup);                
             }
             else
             {
@@ -197,13 +164,33 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                     sb.Add(verticalGroup);
                 }
 
+                List<TransitionDef> upDownTransitions = newRandomizedTransitions.Where(d => d.Direction == TransitionDirection.Top || d.Direction == TransitionDirection.Bot).ToList();
+                List<TransitionDef> leftRightDoorTransitions = newRandomizedTransitions
+                    .Where(d => d.Direction == TransitionDirection.Left || d.Direction == TransitionDirection.Right || d.Direction == TransitionDirection.Door)
+                    .ToList();
+                
+                foreach (TransitionDef def in upDownTransitions)
+                {
+                    if (def.Direction == TransitionDirection.Top)
+                    {
+                        verticalGroup.Group2.Add(def.Name);
+                    }
+                    else if (def.Direction == TransitionDirection.Bot)
+                    {
+                        verticalGroup.Group1.Add(def.Name);
+                    }
+                }
+
+                AddGroupResolver(rb, -999f, upDownTransitions.Select(x => x.Name).AsHashSet(), verticalGroup);
+
+
+                // Add left/right transitions
+                AddGroupResolver(rb, -999f, leftRightDoorTransitions.Select(x => x.Name).AsHashSet(), horizontalGroup);
+
+                // Handle bretta/non-door matching
+                // Start location shenaniganry
             }
 
-            // Add transitions
-            // Remove from vanilla
-            // Handle bretta/non-door matching
-            // Group resolver
-            // Start location shenaniganry
             throw new NotImplementedException();
         }
 
@@ -220,6 +207,25 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 {
                     dgps.Constraints += manager.TransitionGroupConstraint;
                 }
+            }
+        }
+
+        private static void AddGroupResolver(RequestBuilder rb, float priority, HashSet<string> matched, GroupBuilder group)
+        {
+            rb.OnGetGroupFor.Subscribe(priority, MatchedTryResolveGroup);
+
+            bool MatchedTryResolveGroup(RequestBuilder rb, string item, RequestBuilder.ElementType type, out GroupBuilder gb)
+            {
+                if (type == RequestBuilder.ElementType.Transition)
+                {
+                    if (matched.Contains(item))
+                    {
+                        gb = group;
+                        return true;
+                    }
+                }
+                gb = default;
+                return false;
             }
         }
     }
