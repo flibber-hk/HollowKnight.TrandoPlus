@@ -58,9 +58,8 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 {
                     label = RBConsts.OneWayGroup,
                     stageLabel = RBConsts.MainTransitionStage,
+                    strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy()
                 };
-
-                oneWayGroup.strategy = rb.gs.ProgressionDepthSettings.GetTransitionPlacementStrategy();
                 
                 sb.Add(oneWayGroup);
             }
