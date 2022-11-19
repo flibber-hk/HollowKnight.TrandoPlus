@@ -3,27 +3,23 @@
 Extension mod for Randomizer 4 that adds alternative ways to enjoy transition rando. 
 The following options are included; more may be added in later versions, and some may be removed to move to base Randomizer.
 
-### Door Rando
+### Extra transitions
+
+The following options are available:
 - Randomize all 35 randomizable transitions which are either a door, or the vanilla target of a door.
-- Door rando respects the base "coupled" setting; item rando + uncoupled + door rando will cause door transitions to be randomized and uncoupled.
-- With Matched, item + door rando considers left/right transitions to be *unmatched*, so all transitions will connect a door to a non-door.
-- The door in White_Palace_11 (guarded by the first Kingsmould) is excluded if Randomization In White Palace is disabled.
-- This setting will have no effect in room rando, where all doors are already randomized.
-- With one of the area rando variants, door rando adds its transitions to the main area rando group.
-
-The Area Door NonInteraction setting only concerns when door rando is enabled along with one of the area rando variants. In this setting,
-the randomizer will attempt to avoid matching door transitions to non-door transitions. Note that this only covers door transitions
-added by door rando; for example, in full area rando, the transition Fungus3_44[door1] (overgrown mound entrance) can be considered an
-area or a door transition so has no constraint. However, the transition Deepnest_East_06[door1] (the entrance to Oro's hut) is a door
-transition but not an area transition, so may not be paired with an area transition - unless that transition is also a door transition.
-
-More precisely, with AreaDoorNonInteraction enabled, any transition added by door rando must be matched with a door (or door target)
-transition - though it's not enforced that transitions added by door rando must be matched to other transitions added by door rando.
-
-### Drop Rando
+- Randomize all 107 randomizable transitions which are either the only randomizable transition in their room, or the vanilla target of such a transition. ("Dead Ends")
 - Randomize all 8 one-way drops.
-- In area rando variants, drops are added to the part of the area rando pool used by the area drops.
-- This setting will have no effect in room rando, where all drops are already randomized.
+
+Some notes:
+- All of the above settings have no effect in Room Rando, where all transitions are already randomized.
+- The Enforce Transition Grouping setting attempts to make sure that transitions lead to transitions that are "compatible". For instance,
+in area + door rando, the transition between Dirtmouth and Crystal Peaks (an area transition) can not be matched with the transition
+between Crossroads and Salubra's shop (a door transition. But the transition between Fog Canyon and Overgrown Mound could be matched with
+either of the above, as it is both an area and a door transition.
+- The matched and coupled settings are respected. If the only set of extra transitions randomized is door rando, then the matching
+will always pair doors with non-doors (unless unmatched is chosen).
+- Dead End rando can take a lot of attempts to generate. Switching off Matched can reduce this number. If it is taking a lot of attempts,
+it might be worth trying a different seed.
 
 ### Prohibit adjacent benches
 - Rooms containing a bench will not be placed next to each other unless absolutely necessary.
