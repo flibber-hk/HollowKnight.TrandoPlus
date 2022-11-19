@@ -14,6 +14,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             new DoorRandoTransitionSelector(),
             new DropRandoTransitionSelector(),
             new DeadEndRandoTransitionSelector(),
+            new HubRandoTransitionSelector(),
         };
 
         private IEnumerable<TransitionSelector> Selectors => selectors.Where(x => x.IsEnabled());

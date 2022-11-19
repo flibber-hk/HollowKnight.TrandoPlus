@@ -7,6 +7,7 @@ namespace TrandoPlus
     {
         public bool RandomizeDoors = false;
         public bool RandomizeDeadEnds = false;
+        public bool RandomizeHubs = false;
         public bool RandomizeDrops = false;
         public bool EnforceTransitionGrouping = false;
         public bool ProhibitAdjacentBenches = false;
@@ -17,6 +18,7 @@ namespace TrandoPlus
         {
             if (RandomizeDoors
                 || RandomizeDeadEnds
+                || RandomizeHubs
                 || RandomizeDrops
                 || EnforceTransitionGrouping
                 || ProhibitAdjacentBenches

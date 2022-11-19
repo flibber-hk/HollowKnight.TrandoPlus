@@ -1,6 +1,7 @@
 ﻿using ItemChanger;
 using RandomizerMod.RandomizerData;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TrandoPlus.ExtraRandomizedTransitions
 {
@@ -91,6 +92,41 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         }
 
         public override bool IsEnabled() => TrandoPlus.GS.RandomizeDeadEnds;
+    }
+
+    public class HubRandoTransitionSelector : TransitionSelector
+    {
+        public override List<TransitionDef> SelectRandomizedTransitions(IReadOnlyCollection<TransitionDef> availableTransitions)
+        {
+            List<TransitionDef> result = new();
+
+            Dictionary<string, List<TransitionDef>> transitionsByScene = new();
+            foreach (TransitionDef def in availableTransitions)
+            {
+                string sceneName = def.GetConnectedSceneName();
+                if (!transitionsByScene.TryGetValue(sceneName, out List<TransitionDef> transitions))
+                {
+                    transitions = new();
+                    transitionsByScene[sceneName] = transitions;
+                }
+                transitions.Add(def);
+            }
+
+            foreach (List<TransitionDef> transitions in transitionsByScene.Values)
+            {
+                if (transitions.Count >= 6)
+                {
+                    foreach (TransitionDef t in transitions.Where(x => x.Sides == TransitionSides.Both))
+                    {
+                        result.Add(t);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public override bool IsEnabled() => TrandoPlus.GS.RandomizeHubs;
     }
 
     public static class Extensions
