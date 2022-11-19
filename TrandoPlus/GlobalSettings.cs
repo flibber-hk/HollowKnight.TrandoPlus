@@ -17,10 +17,10 @@ namespace TrandoPlus
         {
             if (RandomizeDoors
                 || RandomizeDeadEnds
-                || EnforceTransitionGrouping
                 || RandomizeDrops
+                || EnforceTransitionGrouping
                 || ProhibitAdjacentBenches
-                )
+            )
             {
                 return true;
             }

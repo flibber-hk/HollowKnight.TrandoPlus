@@ -1,8 +1,6 @@
 ﻿using ItemChanger;
 using RandomizerMod.RandomizerData;
-using RandomizerMod.RC;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TrandoPlus.ExtraRandomizedTransitions
 {
@@ -69,7 +67,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             Dictionary<string, List<TransitionDef>> transitionsByScene = new();
             foreach (TransitionDef def in availableTransitions)
             {
-                string sceneName = GetConnectedSceneName(def);
+                string sceneName = def.GetConnectedSceneName();
                 if (!transitionsByScene.TryGetValue(sceneName, out List<TransitionDef> transitions))
                 {
                     transitions = new();
@@ -82,7 +80,10 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             {
                 if (transitions.Count == 1)
                 {
-                    result.Add(transitions[0]);
+                    if (transitions[0].Sides == TransitionSides.Both)
+                    {
+                        result.Add(transitions[0]);
+                    }
                 }
             }
 
@@ -90,12 +91,15 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         }
 
         public override bool IsEnabled() => TrandoPlus.GS.RandomizeDeadEnds;
+    }
 
+    public static class Extensions
+    {
         /// <summary>
         /// Scene name for the transition, except returns a distinct scene name for rooms like
         /// Ruins1_24, which are split into disconnected parts.
         /// </summary>
-        public static string GetConnectedSceneName(TransitionDef def)
+        public static string GetConnectedSceneName(this TransitionDef def)
         {
             string sceneName = def.SceneName;
 
