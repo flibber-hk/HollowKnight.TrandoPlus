@@ -16,6 +16,15 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         /// Whether this selector should be run
         /// </summary>
         public abstract bool IsEnabled();
+
+        /// <summary>
+        /// Whether transitions declared by this selector which are matched within this selector should
+        /// be matched with the target of a transition declared by this selector, and vice versa.
+        /// 
+        /// If the <see cref="GlobalSettings.AllowInternalNonmatching"/> setting is true, then this constraint will
+        /// not be applied.
+        /// </summary>
+        public virtual bool ProvidesInternalConstraint() => true;
     }
 
     public class DoorRandoTransitionSelector : TransitionSelector
@@ -56,6 +65,8 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         }
 
         public override bool IsEnabled() => TrandoPlus.GS.RandomizeDrops;
+
+        public override bool ProvidesInternalConstraint() => false;
     }
 
     public class DeadEndRandoTransitionSelector : TransitionSelector

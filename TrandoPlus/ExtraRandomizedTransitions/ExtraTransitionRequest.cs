@@ -28,7 +28,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         {
             RequestBuilder.OnUpdate.Subscribe(-2000, InstantiateManager);
             RequestBuilder.OnUpdate.Subscribe(-750, SelectTransitions);
-            RequestBuilder.OnUpdate.Subscribe(100, ApplyConstraint);
+            RequestBuilder.OnUpdate.Subscribe(100, ApplyConstraints);
         }
 
         private static void InstantiateManager(RequestBuilder rb)
@@ -221,12 +221,9 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             }
         }
 
-        // TODO - Start location shenaniganry
-
-        private static void ApplyConstraint(RequestBuilder rb)
+        private static void ApplyConstraints(RequestBuilder rb)
         {
             if (!ShouldRun(rb)) return;
-            if (!TrandoPlus.GS.EnforceTransitionGrouping) return;
 
             if (!rb.TryGetStage(RBConsts.MainTransitionStage, out StageBuilder sb)) return;
 
@@ -234,7 +231,14 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             {
                 if (gb.strategy is DefaultGroupPlacementStrategy dgps)
                 {
-                    dgps.Constraints += manager.TransitionGroupConstraint;
+                    if (TrandoPlus.GS.EnforceTransitionGrouping)
+                    {
+                        dgps.Constraints += manager.TransitionGroupConstraint;
+                    }
+                    if (!TrandoPlus.GS.AllowInternalNonmatching)
+                    {
+                        dgps.Constraints += manager.InternalGroupConstraint;
+                    }
                 }
             }
         }

@@ -9,6 +9,7 @@ namespace TrandoPlus
         public bool RandomizeDeadEnds = false;
         public bool RandomizeDrops = false;
         public bool EnforceTransitionGrouping = false;
+        public bool AllowInternalNonmatching = false;
         public bool ProhibitAdjacentBenches = false;
 
         public LimitedRoomRandoConfig LimitedRoomRandoConfig = new();
@@ -18,7 +19,6 @@ namespace TrandoPlus
             if (RandomizeDoors
                 || RandomizeDeadEnds
                 || RandomizeDrops
-                || EnforceTransitionGrouping
                 || ProhibitAdjacentBenches
             )
             {

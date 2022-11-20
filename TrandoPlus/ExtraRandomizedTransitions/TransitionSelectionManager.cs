@@ -18,8 +18,12 @@ namespace TrandoPlus.ExtraRandomizedTransitions
 
         private IEnumerable<TransitionSelector> Selectors => selectors.Where(x => x.IsEnabled());
 
-        // Used for the constraint
+        // Used for the inter-group constraint
         private List<HashSet<string>> GroupedRandomizedTransitions = new();
+
+        // Used for the intra-group constraint
+        private List<HashSet<string>> InternalGroupedTransitions = new();
+
         private HashSet<string> AllTransitions => GroupedRandomizedTransitions.SelectMany(x => x).AsHashSet();
 
         /// <summary>
@@ -45,6 +49,27 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Constraint to be added to the transition groups.
+        /// 
+        /// Explanation: This will only return false if there is a selector which explicitly declares item and loc but neither
+        /// of their targets, or declares the vanilla targets of item and loc but neither item or loc themselves.
+        /// 
+        /// For example, in dead end rando will return false unless one is a dead end and the other is the target of a dead end.
+        /// </summary>
+        public bool InternalGroupConstraint(IRandoItem item, IRandoLocation loc)
+        {
+            foreach (HashSet<string> group in InternalGroupedTransitions)
+            {
+                if (group.Contains(item.Name) && group.Contains(loc.Name))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static void CollectTransitions(RequestBuilder rb, out List<TransitionDef> vanilla, out List<TransitionDef> alreadyRandomized)
@@ -109,6 +134,9 @@ namespace TrandoPlus.ExtraRandomizedTransitions
 
         public List<TransitionDef> GetNewRandomizedTransitions(RequestBuilder rb)
         {
+            GroupedRandomizedTransitions.Clear();
+            InternalGroupedTransitions.Clear();
+
             CollectTransitions(rb, out List<TransitionDef> vanilla, out List<TransitionDef> alreadyRandomized);
             IReadOnlyCollection<TransitionDef> availableTransitions = vanilla.Concat(alreadyRandomized).ToList().AsReadOnly();
             GroupedRandomizedTransitions.Add(alreadyRandomized.Select(x => x.Name).AsHashSet());
@@ -118,18 +146,30 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             foreach (TransitionSelector selector in Selectors)
             {
                 List<TransitionDef> selectedTransitions = selector.SelectRandomizedTransitions(availableTransitions);
-                HashSet<TransitionDef> allSelectedTransitions = new(selectedTransitions);
+
+                HashSet<TransitionDef> vanillaTargets = new();
                 foreach (TransitionDef def in selectedTransitions)
                 {
                     // def.VanillaTarget is null if it's a OneWayOut transition - hope that in this case, the
                     // selector has selected the source transition
                     if (def.VanillaTarget != null && rb.TryGetTransitionDef(def.VanillaTarget, out TransitionDef target))
                     {
-                        allSelectedTransitions.Add(target);
+                        vanillaTargets.Add(target);
                     }
                 }
 
+                HashSet<TransitionDef> allSelectedTransitions = selectedTransitions.Union(vanillaTargets).AsHashSet();
+
                 GroupedRandomizedTransitions.Add(allSelectedTransitions.Select(x => x.Name).AsHashSet());
+                if (selector.ProvidesInternalConstraint())
+                {
+                    HashSet<string> declared = selectedTransitions.Where(x => !vanillaTargets.Contains(x)).Select(x => x.Name).AsHashSet();
+                    HashSet<string> matched = vanillaTargets.Where(x => !selectedTransitions.Contains(x)).Select(x => x.Name).AsHashSet();
+
+                    InternalGroupedTransitions.Add(declared);
+                    InternalGroupedTransitions.Add(matched);
+                }
+
                 newTransitions.UnionWith(allSelectedTransitions);
             }
 

@@ -16,6 +16,8 @@ Some notes:
 in area + door rando, the transition between Dirtmouth and Crystal Peaks (an area transition) can not be matched with the transition
 between Crossroads and Salubra's shop (a door transition. But the transition between Fog Canyon and Overgrown Mound could be matched with
 either of the above, as it is both an area and a door transition.
+- The Allow Internal Nonmatching setting attempts to make sure that transitions within a group behave "as expected" in some cases.
+For example, will prevent two non-dead-end transitions from being paired in Dead End rando.
 - The matched and coupled settings are respected. If the only set of extra transitions randomized is door rando, then the matching
 will always pair doors with non-doors (unless unmatched is chosen).
 - Dead End rando can take a lot of attempts to generate. Switching off Matched can reduce this number. If it is taking a lot of attempts,
