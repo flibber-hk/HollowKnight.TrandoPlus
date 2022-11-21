@@ -32,18 +32,18 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         /// Explanation: This will only return false if item and loc are both transitions that have
         /// been randomized, but not in the same collection.
         /// </summary>
-        public bool TransitionGroupConstraint(IRandoItem item, IRandoLocation loc)
+        public bool TransitionGroupConstraint(string itemName, string locName)
         {
             foreach (HashSet<string> group in GroupedRandomizedTransitions)
             {
-                if (group.Contains(item.Name) && group.Contains(loc.Name))
+                if (group.Contains(itemName) && group.Contains(locName))
                 {
                     return true;
                 }
             }
 
             HashSet<string> allTransitions = AllTransitions;
-            if (!allTransitions.Contains(item.Name) || !allTransitions.Contains(loc.Name))
+            if (!allTransitions.Contains(itemName) || !allTransitions.Contains(locName))
             {
                 return true;
             }
@@ -59,11 +59,11 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         /// 
         /// For example, in dead end rando will return false unless one is a dead end and the other is the target of a dead end.
         /// </summary>
-        public bool InternalGroupConstraint(IRandoItem item, IRandoLocation loc)
+        public bool InternalGroupConstraint(string itemName, string locName)
         {
             foreach (HashSet<string> group in InternalGroupedTransitions)
             {
-                if (group.Contains(item.Name) && group.Contains(loc.Name))
+                if (group.Contains(itemName) && group.Contains(locName))
                 {
                     return false;
                 }

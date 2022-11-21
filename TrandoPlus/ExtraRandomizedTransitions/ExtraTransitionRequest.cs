@@ -227,17 +227,28 @@ namespace TrandoPlus.ExtraRandomizedTransitions
 
             if (!rb.TryGetStage(RBConsts.MainTransitionStage, out StageBuilder sb)) return;
 
-            foreach (GroupBuilder gb in sb.Groups)
+            foreach (GroupBuilder gb in sb.Groups.ToList())
             {
                 if (gb.strategy is DefaultGroupPlacementStrategy dgps)
                 {
+                    Func<string, string, bool> tpconstraint = null;
+
                     if (TrandoPlus.GS.EnforceTransitionGrouping)
                     {
-                        dgps.Constraints += manager.TransitionGroupConstraint;
+                        tpconstraint += manager.TransitionGroupConstraint;
                     }
                     if (!TrandoPlus.GS.AllowInternalNonmatching)
                     {
-                        dgps.Constraints += manager.InternalGroupConstraint;
+                        tpconstraint += manager.InternalGroupConstraint;
+                    }
+
+                    if (gb is SymmetricTransitionGroupBuilder stgb)
+                    {
+                        ConstraintSplitting.ApplyConstraint(tpconstraint, stgb, sb);
+                    }
+                    else
+                    {
+                        dgps.Constraints += (item, loc) => tpconstraint(item.Name, loc.Name);
                     }
                 }
             }
