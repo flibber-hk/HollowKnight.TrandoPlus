@@ -22,6 +22,8 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 return;
             }
 
+            dgps.Constraints += (item, loc) => constraint(item.Name, loc.Name);
+
             List<string> Group1 = stgb.Group1.EnumerateWithMultiplicity().ToList();
             List<string> Group2 = stgb.Group2.EnumerateWithMultiplicity().ToList();
 
@@ -76,8 +78,6 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 counter += 1;
                 stage.Add(newStgb);
             }
-
-            dgps.Constraints += (item, loc) => constraint(item.Name, loc.Name);
         }
 
         /// <summary>
@@ -144,6 +144,8 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 return;
             }
 
+            dgps.Constraints += (item, loc) => constraint(item.Name, loc.Name);
+
             List<string> Transitions = sdtgb.Transitions.EnumerateWithMultiplicity().ToList();
 
             if (!TryMakeBipartition(Transitions, constraint, sdtgb.label, out List<(List<string>, List<string>)> classes))
@@ -186,8 +188,6 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 counter += 1;
                 stage.Add(stgb);
             }
-
-            dgps.Constraints += (item, loc) => constraint(item.Name, loc.Name);
         }
 
         /// <summary>
