@@ -1,5 +1,4 @@
-﻿using Modding;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace TrandoPlus
 {

@@ -1,6 +1,4 @@
-﻿using RandomizerMod.RC;
-
-namespace TrandoPlus.RestrictedRoomRando
+﻿namespace TrandoPlus.RestrictedRoomRando
 {
     public static class RoomRemovalManager
     {
