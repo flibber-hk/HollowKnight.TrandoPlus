@@ -10,15 +10,6 @@ namespace TrandoPlus.RestrictedRoomRando
         {
             RequestMaker.Hook();
             RandomizerMod.Logging.LogManager.AddLogger(new ActiveScenesLogger());
-            RandoController.OnExportCompleted += BeforeGameStart;
-        }
-
-        private static void BeforeGameStart(RandoController rc)
-        {
-            if (Config.RemoveRandomRooms && RandoPlus.RandoPlus.GS.PreferMultiShiny)
-            {
-                RandoPlus.AreaRestriction.AreaRestriction.PreventMultiChests();
-            }
         }
     }
 }
