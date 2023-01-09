@@ -1,5 +1,4 @@
-﻿using RandomizerCore;
-using RandomizerCore.Randomization;
+﻿using RandomizerCore.Randomization;
 using RandomizerMod.RC;
 using System;
 using System.Collections.Generic;
@@ -169,8 +168,6 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 sdtgb.Transitions.RemoveAll(s);
             }
 
-            sdtgb.strategy = new NullPlacementStrategy();
-
             int counter = 0;
             foreach (var pair in classes)
             {
@@ -263,12 +260,6 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             }
 
             return true;
-        }
-
-        private class NullPlacementStrategy : GroupPlacementStrategy
-        {
-            public override List<RandoPlacement> PlaceGroup(RandomizationGroup group, IEnumerable<Sphere> spheres, State placementState) => new();
-            public override List<RandoPlacement> PlaceCoupledGroup(CoupledRandomizationGroup group, IEnumerable<Sphere> spheres, IEnumerable<Sphere> dualSpheres, State placementState) => new();
         }
     }
 }
