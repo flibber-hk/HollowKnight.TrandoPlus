@@ -69,7 +69,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                     reverseLabel = stgb.reverseLabel + $"_{counter}",
                     coupled = stgb.coupled,
                     stageLabel = stgb.stageLabel,
-                    strategy = dgps,
+                    strategy = dgps.Clone(),
                     onPermute = stgb.onPermute,
                 };
                 newStgb.Group1.AddRange(pair.Item1);
@@ -177,7 +177,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                     reverseLabel = sdtgb.label + $"-rev_{counter}",
                     coupled = sdtgb.coupled,
                     stageLabel = sdtgb.stageLabel,
-                    strategy = dgps,
+                    strategy = dgps.Clone(),
                     onPermute = sdtgb.onPermute,
                 };
                 stgb.Group1.AddRange(pair.Item1);
