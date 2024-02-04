@@ -138,7 +138,10 @@ namespace TrandoPlus.ExtraRandomizedTransitions
 
                             return t1.Direction != TransitionDirection.Door || t2.Direction != TransitionDirection.Door;
                         }
-                        ((DefaultGroupPlacementStrategy)horizontalGroup.strategy).Constraints += NotDoorToDoor;
+                        ((DefaultGroupPlacementStrategy)horizontalGroup.strategy).ConstraintList.Add(new DefaultGroupPlacementStrategy.Constraint(
+                            NotDoorToDoor,
+                            Label: "TrandoPlus: Not Door To Door"
+                            ));
                     }
                 }
 
@@ -222,17 +225,21 @@ namespace TrandoPlus.ExtraRandomizedTransitions
             if (!rb.TryGetStage(RBConsts.MainTransitionStage, out StageBuilder sb)) return;
 
             Func<string, string, bool> tpconstraint = null;
+            string label = null;
             if (TrandoPlus.GS.EnforceTransitionGrouping && !TrandoPlus.GS.AllowInternalNonmatching)
             {
                 tpconstraint = (s1, s2) => manager.TransitionGroupConstraint(s1, s2) && manager.InternalGroupConstraint(s1, s2);
+                label = "TrandoPlus: ETG+AIN";
             }
             else if (TrandoPlus.GS.EnforceTransitionGrouping)
             {
                 tpconstraint = manager.TransitionGroupConstraint;
+                label = "TrandoPlus: ETG";
             }
             if (!TrandoPlus.GS.AllowInternalNonmatching)
             {
                 tpconstraint = manager.InternalGroupConstraint;
+                label = "TrandoPlus: AIN";
             }
 
             if (tpconstraint == null)
@@ -246,15 +253,18 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 {
                     if (gb is SymmetricTransitionGroupBuilder stgb)
                     {
-                        ConstraintSplitting.ApplyConstraint(tpconstraint, stgb, sb);
+                        ConstraintSplitting.ApplyConstraint(tpconstraint, label + " (Symmetric TGB)", stgb, sb);
                     }
                     else if (gb is SelfDualTransitionGroupBuilder sdtgb)
                     {
-                        ConstraintSplitting.ApplyConstraint(tpconstraint, sdtgb, sb);
+                        ConstraintSplitting.ApplyConstraint(tpconstraint, label + " (Self-Dual TGB)",sdtgb, sb);
                     }
                     else
                     {
-                        dgps.Constraints += (item, loc) => tpconstraint(item.Name, loc.Name);
+                        dgps.ConstraintList.Add(new DefaultGroupPlacementStrategy.Constraint(
+                            (item, loc) => tpconstraint(item.Name, loc.Name),
+                            Label: label + " (Unrecognized TGB)"
+                            ));
                     }
                 }
             }

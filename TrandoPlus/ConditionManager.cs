@@ -22,7 +22,10 @@ namespace TrandoPlus
             {
                 if (gb.strategy is DefaultGroupPlacementStrategy dgps)
                 {
-                    dgps.Constraints += condition;
+                    dgps.ConstraintList.Add(new DefaultGroupPlacementStrategy.Constraint(
+                        condition,
+                        Label: "TrandoPlus: Prevent adjacent benches"
+                        ));
                 }
             }
         }

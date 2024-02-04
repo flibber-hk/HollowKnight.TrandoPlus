@@ -13,6 +13,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         /// </summary>
         public static void ApplyConstraint(
             Func<string, string, bool> constraint,
+            string label,
             SymmetricTransitionGroupBuilder stgb,
             StageBuilder stage)
         {
@@ -21,7 +22,10 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 return;
             }
 
-            dgps.Constraints += (item, loc) => constraint(item.Name, loc.Name);
+            dgps.ConstraintList.Add(new DefaultGroupPlacementStrategy.Constraint(
+                (item, loc) => constraint(item.Name, loc.Name),
+                Label: label
+                ));
 
             List<string> Group1 = stgb.Group1.EnumerateWithMultiplicity().ToList();
             List<string> Group2 = stgb.Group2.EnumerateWithMultiplicity().ToList();
@@ -135,6 +139,7 @@ namespace TrandoPlus.ExtraRandomizedTransitions
         /// </summary>
         public static void ApplyConstraint(
             Func<string, string, bool> constraint,
+            string label,
             SelfDualTransitionGroupBuilder sdtgb,
             StageBuilder stage)
         {
@@ -143,7 +148,10 @@ namespace TrandoPlus.ExtraRandomizedTransitions
                 return;
             }
 
-            dgps.Constraints += (item, loc) => constraint(item.Name, loc.Name);
+            dgps.ConstraintList.Add(new DefaultGroupPlacementStrategy.Constraint(
+                (item, loc) => constraint(item.Name, loc.Name),
+                Label: label
+                ));
 
             List<string> Transitions = sdtgb.Transitions.EnumerateWithMultiplicity().ToList();
 
